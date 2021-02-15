@@ -1,0 +1,11 @@
+<!-- begin of file - no XML declaration here -->
+<note>
+<?instruction Don't forget to handle this correctly.?>
+  <to class="to">Dick<!-- comment in tag content --></to>
+  <from class="from">Jane</from>
+    <!-- comment between tags -->
+  <heading>Reminder</heading>
+  <body id="body">Don't forget me this weekend!</body>
+</note>
+<!-- end of file -->
+

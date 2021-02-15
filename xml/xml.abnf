@@ -1,0 +1,220 @@
+;
+; Copyright 2020 Lowell D. Thomas
+; email: lowell@coasttocoastresearch.com
+; web:   http://coasttocoastresearch.com/
+;
+; This is an ABNF translation of a sub-set of the XML standard: https://www.w3.org/TR/REC-xml/.
+; The subset includes only those productions necessary for a non-validating parser.
+;
+; 1) This grammar is intended to define a standards-conforming, non-validating parser.
+; 2) This grammar defines a UTF-8 parser only. Any other encoding must be transcoded to UTF-8 prior.
+; 3) The ABNF is incomlete in that some rules, utf8 for example, leave standards compliance to semantic interpretation.
+;
+document        = [prolog] element *Misc
+prolog          = [XMLDecl] *Misc  [doctypedecl *Misc]
+Misc            = S / Comment / PI
+
+; XML DECLARATION
+XMLDecl         = XMLDeclOpen XMLDeclInterior XMLDeclClose
+XMLDeclOpen     = %s"<?xml"
+XMLDeclInterior = VersionInfo [EncodingDecl] [SDDecl]
+XMLDeclClose    = OS %s"?>"
+VersionInfo     = S %s"version" Eq (%d39 VersionNum %d39 / %d34 VersionNum %d34)
+VersionNum      = %s"1." 1*%d48-57
+EncodingDecl    = S %s"encoding" Eq EncDef
+EncDef          = (%d34 EncName %d34) / (%d39 EncName %d39 )
+EncName         = (%d65-90 / %d97-122) *(%d65-90 / %d97-122 / %d48-57 / %d45-46 / %d95)
+SDDecl          = S %s"standalone" Eq (SDeclYes / SDeclNo / SDeclOther)
+SDeclOther      = Char
+SDeclYes        = (%d39 %s"yes" %d39) / (%d34 %s"yes" %d34)
+SDeclNo         = (%d39 %s"no" %d39) / (%d34 %s"no" %d34)
+
+; DOCUMENT TYPE DECLARATION
+doctypedecl     = docopen S docname docint docclose
+docopen         = %s"<!DOCTYPE"
+docname         = Name                                              ; "Name" renamed for semantic identification
+docint          = [S extSubset] OS [%d91 intSubset %d93 OS]
+extSubset       = ExternalID                                        ; ExternalID renamed for semantic identification
+docclose        = %d62
+intSubset       = *(markupdecl / DeclSep)
+DeclSep         = PEReference / S
+ExternalID      = ExternalSysID / ExternalPubID
+ExternalSysID   = %s"SYSTEM" S SystemLiteral
+ExternalPubID   = %s"PUBLIC" S PubidLiteral S SystemLiteral
+SystemLiteral   = (%d34 *(anotquot/utf8) CloseQuot) /(%d39 *(anotapos/utf8) CloseApos)
+PubidLiteral    = (%d34 *(pubid / special) CloseQuot) /(%d39 *(pubid / specialapos) CloseApos)
+CloseQuot       = %d34
+CloseApos       = %d39
+pubid           = %d97-122 / %d65-90 / %d48-57 / %d10 / %d13 / %d32
+special         = %d33 / %d35-37 / %d39-47 / %d58-59 / %d61 / %d63-64 / %d95 
+specialapos     = %d33 / %d35-37 / %d40-47 / %d58-59 / %d61 / %d63-64 / %d95
+                  ; #x20 | #xD | #xA | [a-zA-Z0-9] | [-'()+,./:=?;!*#@$_%]
+PEReference     = %d37 Name %d59
+markupdecl      = elementdecl / AttlistDecl / EntityDecl / NotationDecl / PI / Comment
+PERefError      = *(anotpg / utf8) %d37 Name %d59
+
+; ENTITY DECLARATION
+EntityDecl      = PEDecl / GEDecl
+GEDecl          = GEDeclOpen S ((GEDeclName S GEDef) / PERefError) OS GEDeclClose
+GEDeclOpen      = %s"<!ENTITY"
+GEDeclName      = Name
+GEDef           = EntityValue / GEDefEx
+EntityValue     = %d34 *(EntityChard / GERef / GEPERef) CloseQuot
+                / %d39 *(EntityChara / GERef / GEPERef) CloseApos
+GEPERef         = PEReference                
+EntityChard     = anotpaq / utf8 / HexRef / DecRef
+EntityChara     = anotpaa / utf8 / HexRef / DecRef
+GERef           = %d38 Name %d59
+GEDefEx         = ExternalID [NDataDecl]
+GEDeclClose     = %d62
+PEDecl          = PEDeclOpen S PEDef OS PEDeclClose
+PEDeclOpen      = %s"<!ENTITY" S %d37 S Name
+PEDeclClose     = %d62
+PEDef           = PEEntityValue / ExternalID
+PEEntityValue   = %d34 *(anotpaq / utf8 / PEReference / HexRef / DecRef / (%d38 Name %d59)) CloseQuot
+                / %d39 *(anotpaa / utf8 / PEReference / HexRef / DecRef / (%d38 Name %d59)) CloseApos
+NDataDecl       = S %s"NDATA" S Name                
+
+; ATTRIBUTE LIST DECLARATION                
+AttlistDecl     = AttlistOpen *(AttDef / PERefError) OS AttlistClose
+AttlistOpen     = %s"<!ATTLIST" S (Name / PERefError)
+AttDef          = S AttName S AttType  S DefaultDecl
+AttlistClose    = %d62
+AttName         = Name
+AttType         = StringType / TokenizedType / EnumeratedType
+StringType      = %s"CDATA"
+TokenizedType   = %s"IDREFS"
+                / %s"IDREF"
+                / %s"ID"
+                / %s"ENTITIES"
+                / %s"ENTITY"
+                / %s"NMTOKENS"
+                / %s"NMTOKEN"
+EnumeratedType  = NotationType / Enumeration
+NotationType    = %s"NOTATION" S %d40 OS Nmtoken *(OS %d124 OS Nmtoken) OS %d41
+Enumeration     = %d40 OS Nmtoken *(OS %d124 OS Nmtoken) OS %d41
+DefaultDecl     = %s"#REQUIRED" / %s"#IMPLIED" / ([%s"#FIXED" S] AttlistValue)
+AttlistValue    = (%d34 *AttChard %d34) 
+                / (%d39 *AttChara %d39)
+AttChard        = anotquot / utf8
+AttChara        = anotapos / utf8
+
+; ELEMENT DECLARATION
+elementdecl     = elementopen elementclose
+elementopen     = %s"<!ELEMENT"
+elementclose    = S ((Name S contentspec) / PERefError) OS %d62
+contentspec     = %s"EMPTY" / %s"ANY" / Mixed / children
+Mixed           = %d40 OS %s"#PCDATA" *(OS %d124 OS Name) OS %d41.42
+                / %d40 OS %s"#PCDATA" OS %d41
+children        = (choice / seq) [ %d63 / %d42 / %d43 ]
+cp              = ( Name / choice / seq) [ %d63 / %d42 / %d43 ]               
+choice          = %d40 OS cp *(OS %d124 OS cp) OS %d41
+seq             = %d40 OS cp *(OS %d44 OS cp) OS %d41                 
+
+; NOTATIONAL DECLARATION
+NotationDecl     = NotationOpen S (NotationDef / PERefError) OS NotationClose
+NotationClose    = %d62
+NotationDef      = NExternalID / PublicID
+NotationOpen     = %s"<!NOTATION" S (Name / PERefError)
+PublicID         = %s"PUBLIC" S PubidLiteral
+NExternalID      = ExternalSysID / ExternalPubID
+
+
+; ELEMENT
+element         = EStart (EmptyClose / STagClose content ETag)
+EStart          = EOpen *(S Attribute) OS
+EOpen           = %s"<" (EReserved / Name)
+EReserved       = %s"xml:" Name
+EmptyClose      = %s"/>"
+STagClose       = %d62                  ; NOMATCH indicates malformed element
+Attribute       = ElAttName Eq AttValue
+ElAttName       = EReserved / Name
+AttValue        = (%d34 *(DValue / EntityRef) %d34) / (%d39 *(SValue / EntityRef) %d39)
+ETag            = %s"</" ETagClose
+ETagClose       = Name OS %d62          ; NOMATCH indicates malformed element
+DValue          = DChar / HexRef / DecRef
+DChar           = anotlaq / utf8
+SValue          = SChar / HexRef / DecRef
+SChar           = anotlaa / utf8
+content         = *CharData *((element / EntityRef / ContentRef / CDSect / PI / Comment ) *CharData)
+ContentRef      = HexRef / DecRef
+CharData        = CDSectEnd / anotla / utf8
+CDSectEnd       = %s"]]>"
+
+; CHARACTER DATA SECTION
+CDSect          = %s"<![CDATA[" *(CDChar / CDRb / CD2Rb) CDEnd
+CDEnd           = %s"]]>"
+CDChar          = anotrb / utf8
+CDRb            = %d93 (anotrb / utf8)
+CD2Rb           = %d93.93 (anotgt / utf8)
+
+; REFERENCES
+Reference       = EntityRef / HexRef / DecRef
+                ; Note that characters given by HexRef or DecRef must honor the XML "Char" character range
+                ; This will be enforced semantically.
+EntityRef       = %d38 Name RefClose
+HexRef          = HexOpen HexValue RefClose
+RefClose        = %d59
+HexValue        = 1*(%d48-57 / %d65-70 / %d97-102)  ; NOMATCH is a mal-formed element
+HexOpen         = %s"&#x"
+DecRef          = DecOpen DecValue RefClose
+DecValue        = 1*%d48-57                         ; NOMATCH is a mal-formed element
+DecOpen         = %s"&#"
+
+; COMMENTS
+Comment         = %s"<!--" *((anoth / utf8) / (%d45 (anoth / utf8))) (%s"-->" / Doubleh)
+Doubleh         = %d45.45                           ; error production
+
+; PROCESSING INSTRUCTIONS
+PI              = PIOpen PIClose
+PIOpen          = %s"<?" 
+PIClose         = PITarget S PIInfo %s"?>"
+PIInfo          = *PIInfoChar
+PIInfoChar      = PIInfoq / PIInfoa
+PIInfoq         = %s"?" (anotgt / utf8)
+PIInfoa         = anotq / utf8
+PITarget        = PIReserved / PIForbidden / Name
+PIForbidden     = %s"xml" S
+PIReserved      = %s"xml-" *Char
+
+; SPECIALIZED CHARACTER RANGES
+ascii           = %d32-126 / %d10 / %d13 / %d9                               ; all ASCII characters
+anotla          = %d32-37 / %d39-59 / %d61-126 / %d10 / %d13 / %d9           ; all ASCII characters not <&
+anotlaq         = %d32-33 / %d35-37 / %d39-59 / %d61-126 / %d10 / %d13 / %d9 ; all ASCII characters not <&"
+anotlaa         = %d32-37 / %d40-59 / %d61-126 / %d10 / %d13 / %d9           ; all ASCII characters not <&'
+anotq           = %d32-62 / %d64-126 / %d10 / %d13 / %d9                     ; all ASCII characters not ?
+anotgt          = %d32-61 / %d63-126 / %d10 / %d13 / %d9                     ; all ASCII characters not >
+anotpaq         = %d32-33 / %d35-36 / %d39-126 / %d10 / %d13 / %d9           ; all ASCII characters not %&"                
+anotpaa         = %d32-36 / %d40-126 / %d10 / %d13 / %d9                     ; all ASCII characters not %&'
+anotquot        = %d32-33 / %d35-126 / %d10 / %d13 / %d9                     ; all ASCII characters not "
+anotapos        = %d32-38 / %d40-126 / %d10 / %d13 / %d9                     ; all ASCII characters not '
+anotp           = %d32-36 / %d38-126 / %d10 / %d13 / %d9                     ; all ASCII characters not %
+anotpg          = %d32-36 / %d38-61 / %d63-126 / %d10 / %d13 / %d9           ; all ASCII characters not %>
+anoth           = %d32-44 / %d46-126 / %d10 / %d13 / %d9                     ; all ASCII characters not -
+anotrb          = %d32-92 / %d94-126 / %d10 / %d13 / %d9                     ; all ASCII characters not ]
+
+; BASICS
+Char            = ascii / utf8
+utf8            = utf82 / utf83 / utf84         ; decoding utf8 is done semantically
+utf82           = %xC2-DF UTF8-tail             ; this skips overlong encodings
+utf83           = %xE0 %xA0-BF UTF8-tail        ; this skips overlong encodings
+                / %xE1-EC 2( UTF8-tail )
+                / %xED %x80-9F UTF8-tail        ; this skips the surrogate pair blocks
+                / %xEE 2( UTF8-tail )
+                / %xEF UTF8-tail %x80-BD        ; %xBE & %xBF would result in 0xFFFE & 0xFFFF which are not allowed
+utf84           = %xF0 %x90-BF 2( UTF8-tail )   ; this skips overlong encodings
+                / %xF1-F3 3( UTF8-tail )
+                / %xF4 %x80-8F 2( UTF8-tail )   ; this skips values greater than 0x10FFFF                  
+UTF8-tail       = %x80-BF
+
+; names
+Name            = NameStartChar *NameChar
+NameStartChar   = Char                          ; character range validated semantically
+NameOtherChar   = Char                          ; character range validated semantically
+NameChar        = NameStartChar / NameOtherChar
+Nmtoken         = 1*NameChar
+
+; white space
+S               = 1*(%d32 / %d10 / %d9 / %d13)
+OS              = *(%d32 / %d10 / %d9 / %d13)
+Eq              = OS %d61 OS

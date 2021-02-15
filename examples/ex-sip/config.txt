@@ -1,0 +1,4 @@
+--input=../tests/SIP/SIP3.bnf
+--output=../tests/SIP/SIP3
+-dc
+-dra

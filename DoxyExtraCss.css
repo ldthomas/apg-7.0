@@ -1,0 +1,23 @@
+/*
+ dotgraph is the class for DOT graphs
+ this will float them left to permit text wrapping around them
+*/
+.dotgraph{
+float: left;
+}
+
+/*
+ The clear-left class can be used to clear a left-floating graph
+ and remove the text wrapping. However, you must use the \htmlonly tag
+ or Doxygen will ignore any class you put in a <p> tag
+ (or any other tag, for that matter.)
+ Also, no end tag, </p>, is needed. Doxygen will supply it.
+ e. g. 
+ \htmlonly
+ <p class="clear-left">
+ \endhtmlonly
+*/
+
+.clear-left{
+clear: left;
+}

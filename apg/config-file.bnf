@@ -1,0 +1,50 @@
+; grammar for the trace configuration file parser
+
+file            = *(blank-line / line)
+line            = binary / num / rule / udt / error
+error           = bad-line line-end
+bad-line        = *(%d32-126 / %d9)
+
+                ; binary (true/false) options
+binary          = binary-name owsp %d61 owsp binary-value line-end
+binary-name     = "all-rules"
+                / "all-ops"
+                / "count-only"
+                / "ALT"
+                / "CAT"
+                / "REP"
+                / "TRG"
+                / "TBS"
+                / "TLS"
+                / "AND"
+                / "NOT"
+                / "BKR"
+                / "BKA"
+                / "BKN"
+                / "ABG"
+                / "AEN"
+binary-value    = true / false
+true            = "true" / "t" / "1"
+false           = "false" / "f" / "0"            
+
+                ; numerical option - values are numbers
+num             = num-name owsp %d61 owsp num-value line-end
+num-name        = "first-record"
+                / "max-records"
+num-value       = 1*10%d48-57
+
+                ; rule-name options - values are alphanumeric, max length 128
+rule            = "rule:" owsp rule-name  wsp binary-value line-end
+rule-name       = (%d97-122 / %d65-90) *127(%d97-122 / %d65-90 / %d48-57 / %d45)               
+
+                ; udt-name options - values are alphanumeric, max length 128
+udt             = "udt:" owsp udt-name wsp binary-value line-end
+udt-name        = (%d97-122 / %d65-90) *127(%d97-122 / %d65-90 / %d48-57 / %d45)               
+
+; admin
+blank-line      = line-end
+wsp             = 1*%d32/%d9
+owsp            = *%d32/%d9
+comment         = %d35 *(%d32-126/%d9)
+line-end        = owsp [comment] (end / %$)
+end             = %d10/%d13.10/%d13

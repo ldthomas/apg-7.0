@@ -1,0 +1,14 @@
+email-address   = local "@" domain
+local           = local-word *("." local-word)
+domain          = 1*(sub-domain ".") top-domain
+local-word      = 1*local-char
+sub-domain      = 1*sub-domain-char
+top-domain      = 2*6top-domain-char
+local-char      = alpha / num / special
+sub-domain-char = alpha / num / "-"
+top-domain-char = alpha
+alpha           = %d65-90 / %d97-122
+num             = %d48-57
+special         = %d33 / %d35 / %d36-39 / %d42-43 / %d45 / %d47 
+                / %d61 / %d63 / %d94-96 / %d123-126
+

@@ -1,0 +1,5 @@
+float    = sign decimal exponent
+sign     = ["+" / "-"]
+decimal  = integer [dot fraction]
+           / dot fraction
+

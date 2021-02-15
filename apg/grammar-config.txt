@@ -1,0 +1,4 @@
+--input=abnf-for-sabnf.abnf
+--output=../api/sabnf-grammar
+--p-rules=StringTab
+-dv

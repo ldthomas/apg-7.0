@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE note 
+[
+<!ENTITY copy "Copyright &#169; 2021"> 
+<!ENTITY last "Doe">
+<!ENTITY colon ":" >
+<!ATTLIST note  NodeLevel CDATA "0" 
+                type CDATA "email"
+>
+<!ATTLIST to  class CDATA "to"> 
+<!ATTLIST from  class CDATA "from"> 
+<!ATTLIST body  id CDATA "body"> 
+]>
+<note>
+  <to>Dick &last;</to>
+  <from>Jane &last;</from>
+  <heading class="anti-heading">Reminder&colon;</heading>
+  <body>Don't forget me this weekend!</body>
+  <copyright>&copy; Jane &last;</copyright>
+</note>

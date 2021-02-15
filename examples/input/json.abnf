@@ -1,0 +1,69 @@
+JSON-text               = ws value ws
+begin-array             = ws %x5B ws  ; [ left square bracket
+begin-object            = ws %x7B ws  ; { left curly bracket
+end-array               = ws %x5D ws  ; ] right square bracket
+end-object              = ws %x7D ws  ; } right curly bracket
+name-separator          = ws %x3A ws  ; : colon
+value-separator         = ws %x2C ws  ; , comma
+end-member-separator    = ws %x2C ws  ; , comma - error production to catch illegal trailing commas
+end-value-separator     = ws %x2C ws  ; , comma - error production to catch illegal trailing commas
+ws                      = *(
+                        %x20 /              ; Space
+                        %x09 /              ; Horizontal tab
+                        %x0A /              ; Line feed or New line
+                        %x0D )              ; Carriage return
+value                   = true / false / null / object / array / number / string
+false                   = %x66.61.6c.73.65   ; false
+null                    = %x6e.75.6c.6c      ; null
+true                    = %x74.72.75.65      ; true
+object                  = begin-object [ member *( value-separator member ) [end-member-separator] ] end-object
+member                  = key name-separator value
+key                     = key-begin string-content string-end
+key-begin               = %x22
+array                   = begin-array [ value *( value-separator value ) [end-value-separator] ] end-array
+number                  = [ minus / plus ] ((int [ frac ])/ frac-only) [ exp ]
+frac-only               = frac ; error production - fraction without preceding int is not allowd by RFC 8259  
+decimal-point           = %x2E       ; . period
+digit1-9                = %x31-39         ; 1-9
+e                       = %x65 / %x45            ; e E
+exp                     = e [ eminus / eplus ] 1*DIGIT
+frac                    = decimal-point frac-digits
+frac-digits             = 1*DIGIT
+int                     = zero / ( digit1-9 *DIGIT )
+minus                   = %x2D ; - minus - recognized only as the integer/decimal sign
+eminus                  = %x2D ; - minus - recognized as the exponent sign only
+plus                    = %x2B ; + plus - error production - plus sign is invalid for decimal (RFC8259)
+eplus                   = %x2B ; + plus - recognized as exponent sign only
+zero                    = %x30 ; 0 zero
+string                  = string-begin string-content string-end
+string-begin            = %x22
+string-content          = *char
+string-end              = %x22
+char                    = ascii / quote / r-solidus / solidus / backspace / form-feed / line-feed / cr / tab / utf16 / utf8
+quote                   = %x5C.22 ; "    quotation mark  U+0022
+r-solidus               = %x5C.5C ; \    reverse solidus U+005C
+solidus                 = %x5C.2F ; /    solidus         U+002F
+backspace               = %x5C.62 ; b    backspace       U+0008
+form-feed               = %x5C.66 ; f    form feed       U+000C
+line-feed               = %x5C.6E ; n    line feed       U+000A
+cr                      = %x5C.72 ; r    carriage return U+000D
+tab                     = %x5C.74 ; t    tab             U+0009
+ascii                   = %x20-21 / %x23-5B / %x5D-7F ; all but \ and "
+utf16                   = utf16-2 / utf16-1
+utf16-2                 = %x5C.75 4HEXDIG %x5C.75 4HEXDIG ; surrogate pairs are evaluated semantically
+utf16-1                 = %x5C.75 utf16-tail
+utf16-tail              = 4HEXDIG ; error production for semantically detecting \uXXXX formatting errors 
+utf8                    = utf8-2 / utf8-3 / utf8-4 ; decoding utf8 is done semantically
+utf8-2                  = %xC2-DF UTF8-tail
+utf8-3                  = %xE0 %xA0-BF UTF8-tail
+                        / %xE1-EC 2( UTF8-tail )
+                        / %xED %x80-9F UTF8-tail
+                        / %xEE 2( UTF8-tail )
+                        / %xEF UTF8-tail %x80-BD
+utf8-4                  = %xF0 %x90-BF 2( UTF8-tail )
+                        / %xF1-F3 3( UTF8-tail )
+                        / %xF4 %x80-8F 2( UTF8-tail )                  
+UTF8-tail               = %x80-BF
+DIGIT                   = %d48-57
+HEXDIG                  = %d48-57 / %d65-70 / %d97-102
+

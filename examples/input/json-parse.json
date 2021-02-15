@@ -1,0 +1,18 @@
+{
+    "text" : {
+        "simple":"the quick brown fox jumps over the lazy dog",
+        "ctrl":"text with control characters: \\\/\"\b\f\n\r\tabc"
+        },
+    "unicode" : {
+        "text":"simple",
+        "ctrl":"abc\tdef\nghi",
+        "escaped":"\u0000\u00ff\ud800\udc00\udbff\udfff",
+        "UTF-8": "ÿह𐍈"
+        },
+    "numbers" : {
+        "signed":[-1,-2,-9223372036854775807],
+        "unsigned":[1, 255, 65535, 4294967295, 18446744073709551615],
+        "floating point":[2.2250738585072014e-308, 2.2250738585072014e307, -1.1, 2.3, -0.001e-10]
+        }, 
+    "odd-ÿ-key" : "how do you like this key?"
+}
