@@ -51,7 +51,7 @@ See \ref exapgex_req.
       - APG_BKR
       - APG_AST
       - APG_TRACE
-      - APG_CHAR=32
+      - APG_ACHAR=32
 
 Note that some examples will require 32-bit alphabet character codes. Therefore, all parsers in the application
 including the API for the pattern must use 32-bit characters. This emphasizes the importance of always

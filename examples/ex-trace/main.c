@@ -73,7 +73,7 @@ The compiled example will execute the following cases. Run the application with 
  */
 
 /**
-\page extrace Parser Tracing the Statistics
+\page extrace Parser Tracing and Statistics
 This example will demonstrate basic parser tracing, the primary debugging tool.
 When a parser unexpectedly fails it could be that the grammar is in error or that input string is an invalid grammar phase
 or both.

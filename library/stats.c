@@ -503,16 +503,20 @@ void vStatsToAscii(void* vpCtx, const char* cpMode, const char* cpFileName) {
             (luint) spNode->uiMatch, (luint) spNode->uiNomatch, "TOTAL");
 
     // sort the rules
-    qsort((void*) spStats->spRuleStats, (size_t) spStats->uiRuleCount, sizeof(node_stat), compareNames);
+    node_stat sRuleStats[spStats->uiRuleCount];
+    for (ui = 0; ui < spStats->uiRuleCount; ui += 1) {
+        sRuleStats[ui] = spStats->spRuleStats[ui];
+    }
+    qsort((void*) sRuleStats, (size_t) spStats->uiRuleCount, sizeof(node_stat), compareNames);
     if (cMode == s_cHits) {
-        qsort((void*) spStats->spRuleStats, (size_t) spStats->uiRuleCount, sizeof(node_stat), compareHits);
+        qsort((void*) sRuleStats, (size_t) spStats->uiRuleCount, sizeof(node_stat), compareHits);
     }
     // open the rules table
     fprintf(spOut, "\n");
     fprintf(spOut, "Rules: %s\n", cpModeName);
     fprintf(spOut, cpFormats, "hits", "match", "nomatch", "name");
     for (ui = 0; ui < spStats->uiRuleCount; ui += 1) {
-        spNode = &spStats->spRuleStats[ui];
+        spNode = &sRuleStats[ui];
         if (spNode->uiHits) {
             fprintf(spOut, cpFormat, (luint) spNode->uiHits, (luint) spNode->uiMatch, (luint) spNode->uiNomatch, spNode->cpName);
         }
@@ -520,16 +524,20 @@ void vStatsToAscii(void* vpCtx, const char* cpMode, const char* cpFileName) {
 
     if (spStats->uiUdtCount) {
         // sort the udts
-        qsort((void*) spStats->spUdtStats, (size_t) spStats->uiUdtCount, sizeof(node_stat), compareNames);
+        node_stat sUdtStats[spStats->uiUdtCount];
+        for (ui = 0; ui < spStats->uiUdtCount; ui += 1) {
+            sUdtStats[ui] = spStats->spUdtStats[ui];
+        }
+        qsort((void*) sUdtStats, (size_t) spStats->uiUdtCount, sizeof(node_stat), compareNames);
         if (cMode == s_cHits) {
-            qsort((void*) spStats->spUdtStats, (size_t) spStats->uiUdtCount, sizeof(node_stat), compareHits);
+            qsort((void*) sUdtStats, (size_t) spStats->uiUdtCount, sizeof(node_stat), compareHits);
         }
         // open the UDT table
         fprintf(spOut, "\n");
         fprintf(spOut, "UDTs: %s\n", cpModeName);
         fprintf(spOut, cpFormats, "hits", "match", "nomatch", "name");
         for (ui = 0; ui < spStats->uiUdtCount; ui += 1) {
-            spNode = &spStats->spUdtStats[ui];
+            spNode = &sUdtStats[ui];
             if (spNode->uiHits) {
                 fprintf(spOut, cpFormat,
                         (luint) spNode->uiHits, (luint) spNode->uiMatch, (luint) spNode->uiNomatch, spNode->cpName);

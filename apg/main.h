@@ -416,7 +416,10 @@ typedef struct{aint uiValue;} my_special_type;
 Variables and functions are camel case with Hungarian notation for the variable type or function return type.
 <pre>
 aint uiMyFavoriteVariable = 1;
-achar* acpMyFavoriteFunc(achar* acpCharacters){// do something to the characters; return acpCharacters;}
+achar* acpMyFavoriteFunc(achar* acpCharacters){
+    // do something to the characters
+    return acpCharacters;
+}
 </pre>
 
 

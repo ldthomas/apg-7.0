@@ -312,8 +312,8 @@ static int iInPppt() {
     static void* vpParser = NULL;
     static void* vpPpptParser  = NULL;
     char* cpInput = "{"
-            "array: [1,2,3,4]"
-            "object: {t: true, f: false, n:null}"
+            "\"array\": [1,2,3,4],"
+            "\"object\": {\"t\": true, \"f\": false, \"n\":null}"
             "}";
     pppt_size sPpptSize;
     parser_config sConfig;
