@@ -613,6 +613,7 @@ static void vExtractArgOptions(config_ctx* spCtx, char* cpParams) {
             if (*cpParams == 0) {
                 XTHROW(spCtx->spException, "options error: -o has no following output file name");
             }
+            uiStrLen = (aint) (strlen(cpParams) + 1);
             vpVecPushn(spCtx->vpVecOutput, cpParams, uiStrLen);
             uiStrLen = (aint) (strlen(cpParams) + 1);
             cpParams += uiStrLen;
@@ -765,6 +766,7 @@ static void vExtractFileOptions(config_ctx* spCtx){
     void* vpVec = spCtx->vpVecArgs;
     char cZero = 0;
     char c;
+    int iChar;
     aint uiNewLine = 1;
     aint uiLineEnd = 2;
     aint uiComment = 3;
@@ -797,7 +799,8 @@ static void vExtractFileOptions(config_ctx* spCtx){
     }
     uiSize = (aint) (strlen(cpFirst) + 1);
     vpVecPushn(vpVec, (void*)cpFirst, uiSize);
-    while((c = fgetc(spCtx->spConfigFile)) != EOF){
+    while((iChar = fgetc(spCtx->spConfigFile)) != EOF){
+        c = (char)iChar;
         if(uiState == uiOption){
             if(c == cLB || c == cSP || c == cTAB || c == cLF || c == cCR){
                 vpVecPush(vpVec, &cZero);

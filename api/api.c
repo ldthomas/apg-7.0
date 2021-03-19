@@ -346,7 +346,6 @@ void vApiOpcodesToAscii(void *vpCtx, const char* cpFileName) {
     // opcodes
     aint uiRuleCount = spApi->uiRuleCount;
     aint ui, uj, uk, uc;
-    aint *uipBeg;
     luint *luipBeg;
     api_rule *spRule;
     api_op *spOp = spApi->spOpcodes;
@@ -362,7 +361,7 @@ void vApiOpcodesToAscii(void *vpCtx, const char* cpFileName) {
                 fprintf(spOut, "%"PRIuMAX": ", (luint) uk);
                 fprintf(spOut, "ALT: ");
                 fprintf(spOut, "children: %"PRIuMAX":", (luint) spOp->uiChildCount);
-                for (uc = 0; uc < spOp->uiChildCount; uc++, uipBeg++) {
+                for (uc = 0; uc < spOp->uiChildCount; uc++) {
                     if (uc == 0) {
                         fprintf(spOut, " %"PRIuMAX"", (luint) spOp->uipChildIndex[uc]);
                     } else {
@@ -376,7 +375,7 @@ void vApiOpcodesToAscii(void *vpCtx, const char* cpFileName) {
                 fprintf(spOut, "%"PRIuMAX": ", (luint) uk);
                 fprintf(spOut, "CAT: ");
                 fprintf(spOut, "children: %"PRIuMAX":", (luint) spOp->uiChildCount);
-                for (uc = 0; uc < spOp->uiChildCount; uc++, uipBeg++) {
+                for (uc = 0; uc < spOp->uiChildCount; uc++) {
                     if (uc == 0) {
                         fprintf(spOut, " %"PRIuMAX"", (luint) spOp->uipChildIndex[uc]);
                     } else {
