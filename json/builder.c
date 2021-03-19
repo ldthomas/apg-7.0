@@ -511,6 +511,11 @@ aint uiJsonBuildAddToObject(void* vpBuildCtx, aint uiObject, aint uiKey, aint ui
     aint uiThis = uiVecLen(spBld->vpVecb);
     bvalue* spThis = (bvalue*)vpVecPush(spBld->vpVecb, NULL);
     memset(spThis, 0, sizeof(bvalue));
+
+    // refresh the pointers
+    spParent = (bvalue*)vpVecAt(spBld->vpVecb, uiObject);
+    spAdd = (bvalue*)vpVecAt(spBld->vpVecb, uiAdd);
+    spKey = (bvalue*)vpVecAt(spBld->vpVecb, uiKey);
     if(spParent->uiChildOffset == 0){
         // adding the first child to the parent object
         spParent->uiChildOffset = uiThis;
