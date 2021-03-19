@@ -783,7 +783,8 @@ static luint* luipMakeInitData(api* spApi){
 static aint uiLastChar(char cCharToFind, const char* cpString) {
     aint uiLast = APG_UNDEFINED;
     aint ui = 0;
-    for (; ui < (aint) strlen(cpString); ui++) {
+    aint uiLen = (aint) strlen(cpString);
+    for (; ui < uiLen; ui++) {
         if (cpString[ui] == cCharToFind) {
             uiLast = ui;
         }

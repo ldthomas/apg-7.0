@@ -409,7 +409,8 @@ void vLineError(api* spCtx, aint uiCharIndex, const char* cpSrc, const char* cpM
 
         // generate the line text
         int n = 0;
-        for(; n < strlen(cpSrc); n++){
+        int len = (int)strlen(cpSrc);
+        for(; n < len; n++){
             caBuf[n] = ' ';
         }
         caBuf[n++] = ':';
