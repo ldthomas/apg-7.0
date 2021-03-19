@@ -585,7 +585,6 @@ static void vExtractArgOptions(config_ctx* spCtx, char* cpParams) {
             }
             uiStrLen = (aint) (strlen(cpParams) + 1);
             vpVecPushn(spCtx->vpVecInput, cpParams, uiStrLen);
-            uiStrLen = (aint) (strlen(cpParams) + 1);
             cpParams += uiStrLen;
             spCtx->uiInputFiles++;
         } else if (strncmp(cpParams, "--input=", 8) == 0) {
@@ -615,7 +614,6 @@ static void vExtractArgOptions(config_ctx* spCtx, char* cpParams) {
             }
             uiStrLen = (aint) (strlen(cpParams) + 1);
             vpVecPushn(spCtx->vpVecOutput, cpParams, uiStrLen);
-            uiStrLen = (aint) (strlen(cpParams) + 1);
             cpParams += uiStrLen;
         } else if (strncmp(cpParams, "--output=", 9) == 0) {
             uiStrLen = (aint) (strlen(&cpParams[9]) + 1);
