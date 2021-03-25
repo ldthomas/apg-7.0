@@ -57,9 +57,9 @@ typedef struct{
 void vAttrsDtor(void* vpCtx);
 void vRuleDependencies(attrs_ctx* spAtt);
 void vRuleAttributes(attrs_ctx* spAtt);
-void vAttrsByName(attrs_ctx* spAtt, FILE* spStream);
-void vAttrsByIndex(attrs_ctx* spAtt, FILE* spStream);
-void vAttrsByType(attrs_ctx* spAtt, FILE* spStream);
+void vAttrsByName(api_attr* spAttrs, aint uiCount, FILE* spStream);
+void vAttrsByIndex(api_attr* spAttrs, aint uiCount, FILE* spStream);
+void vAttrsByType(api_attr* spAttrs, aint uiCount, FILE* spStream);
 const char * cpType(aint uiId);
 
 /**

@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
             }
         }else{
             printf("ATTRIBUTE ERRORS DETECTED\n");
-//            vApiAttrsErrorsToAscii(vpApi, "type", NULL);
+            vApiAttrsErrorsToAscii(vpApi, "type", NULL);
             if (spConfig->bDa) {
                 printf("\n");
                 vApiAttrsToAscii(vpApi, "type", NULL);

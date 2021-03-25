@@ -238,30 +238,83 @@ void vApiAttrsToAscii(void *vpCtx, const char *cpMode, const char* cpFileName) {
     attrs_ctx *spAtt = (attrs_ctx*) spApi->vpAttrsCtx;
     if(cpMode){
         if (cpMode[0] == 'a' || cpMode[0] == 'A') {
-            vAttrsByName(spAtt, spOut);
+            vAttrsByName(spAtt->spPublicAttrs, spApi->uiRuleCount, spOut);
         } else if (cpMode[0] == 't' || cpMode[0] == 'T') {
-            vAttrsByType(spAtt, spOut);
+            vAttrsByType(spAtt->spPublicAttrs, spApi->uiRuleCount, spOut);
         } else {
             // default to index
-            vAttrsByIndex(spAtt, spOut);
+            vAttrsByIndex(spAtt->spPublicAttrs, spApi->uiRuleCount, spOut);
         }
     }else{
         // default to index
-        vAttrsByIndex(spAtt, spOut);
+        vAttrsByIndex(spAtt->spPublicAttrs, spApi->uiRuleCount, spOut);
     }
     if(spOut != stdout){
         fclose(spOut);
     }
 }
 
-static void vPrintOneAttrByName(api_attr_w* a, FILE* spStream){
+/** \brief Display all rule attributes with errors.
+ * \param vpCtx - Pointer to an API context previously returned from vpApiCtor().
+ * \param cpMode (note: the first character (case-insensitive) of the following options is all that is needed)
+ *  - "index" sort attributes by rule name index (the order they appear in the grammar syntax)
+ *  - "alpha" sort attributes by rule name alphabetically
+ *  - "type" sort attributes by type (non-recursive, recursive, etc.). Rules are alphabetical within each type.
+ *  - NULL, empty string or any string not beginning with "a" or "t" defaults to "index"
+ * \param cpFileName - Name of the file to display on.
+ * Any directories in the path name must exist.
+ * If NULL, stdout is used.
+ */
+void vApiAttrsErrorsToAscii(void *vpCtx, const char *cpMode, const char* cpFileName) {
+    if (!vpCtx || !bApiValidate(vpCtx)) {
+        vExContext();
+    }
+    api *spApi = (api*) vpCtx;
+    if (!spApi->bAttributesComputed) {
+        XTHROW(spApi->spException,
+                "no attributes available - must first call bApiAttrs()");
+    }
+    FILE *spOut = stdout;
+    if(cpFileName){
+        spOut = fopen(cpFileName, "wb");
+        if (!spOut) {
+            char caBuf[126];
+            snprintf(caBuf, 126, "cannot open file name %s for writing", cpFileName);
+            XTHROW(spApi->spException, caBuf);
+        }
+    }
+    attrs_ctx *spAtt = (attrs_ctx*) spApi->vpAttrsCtx;
+    fprintf(spOut, "ATTRIBUTE ERRORS\n");
+    if(spAtt->uiErrorCount){
+        if(cpMode){
+            if (cpMode[0] == 'a' || cpMode[0] == 'A') {
+                vAttrsByName(spAtt->spErrorAttrs, spAtt->uiErrorCount, spOut);
+            } else if (cpMode[0] == 't' || cpMode[0] == 'T') {
+                vAttrsByType(spAtt->spErrorAttrs, spAtt->uiErrorCount, spOut);
+            } else {
+                // default to index
+                vAttrsByIndex(spAtt->spErrorAttrs, spAtt->uiErrorCount, spOut);
+            }
+        }else{
+            // default to index
+            vAttrsByIndex(spAtt->spErrorAttrs, spAtt->uiErrorCount, spOut);
+        }
+    }else{
+        fprintf(spOut, "<none>\n");
+    }
+    if(spOut != stdout){
+        fclose(spOut);
+    }
+}
+
+static void vPrintOneAttrByName(api_attr* a, FILE* spStream){
     fprintf(spStream, "%7s |%7s |%7s |%7s |%7s |%7s | %s\n",
             cpShouldBeFalse(a->bLeft), cpBool(a->bNested), cpBool(a->bRight),
             cpShouldBeFalse(a->bCyclic),
             cpEmpty(a->bEmpty), cpShouldBeTrue(a->bFinite),
             a->cpRuleName);
 }
-static void vPrintOneAttrByType(api_attr_w* a, FILE* spStream){
+static void vPrintOneAttrByType(api_attr* a, FILE* spStream){
     if(a->uiRecursiveType == ID_ATTR_MR){
         fprintf(spStream, "%7s |%7s |%7s |%7s |%7s |%7s |%7"PRIuMAX" |%7s | %s\n",
                 cpShouldBeFalse(a->bLeft), cpBool(a->bNested), cpBool(a->bRight),
@@ -281,37 +334,19 @@ static void vPrintOneAttrByType(api_attr_w* a, FILE* spStream){
  * This function is only called internally, hence the context pointer is already cast correctly.
  * \param spStream An open stream to display to.
  */
-void vAttrsByType(attrs_ctx* spAtt, FILE* spStream){
+void vAttrsByType(api_attr* spAttrs, aint uiCount, FILE* spStream){
     aint ui;
-    api_attr_w* a;
-    aint uiRuleCount = spAtt->spApi->uiRuleCount;
-    api_attr_w sAttrs[uiRuleCount];
-    for(ui = 0; ui < uiRuleCount; ui++){
-        sAttrs[ui] = spAtt->spAttrs[ui];
+    api_attr sAttrs[uiCount];
+    for(ui = 0; ui < uiCount; ui++){
+        sAttrs[ui] = spAttrs[ui];
     }
-    qsort((void*)&sAttrs[0], uiRuleCount, sizeof(api_attr_w), iCompName);
-    qsort((void*)&sAttrs[0], uiRuleCount, sizeof(api_attr_w), iCompType);
+    qsort((void*)&sAttrs[0], uiCount, sizeof(api_attr), iCompName);
+    qsort((void*)&sAttrs[0], uiCount, sizeof(api_attr), iCompType);
     fprintf(spStream, "ATTRIBUTES BY TYPE\n");
     fprintf(spStream, "   left | nested |  right | cyclic |  empty | finite |  group |   type |   name\n");
     fprintf(spStream, "--------|--------|--------|--------|--------|--------|--------|--------|--------\n");
-    if(spAtt->uiErrorCount){
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &sAttrs[ui];
-            if(a->bLeft|| !a->bFinite || a->bCyclic){
-                vPrintOneAttrByType(a, spStream);
-            }
-        }
-        fprintf(spStream, "\n");
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &sAttrs[ui];
-            if(!(a->bLeft|| !a->bFinite || a->bCyclic)){
-                vPrintOneAttrByType(a, spStream);
-            }
-        }
-    }else{
-        for(ui = 0; ui < uiRuleCount; ui++){
-            vPrintOneAttrByType(&sAttrs[ui], spStream);
-        }
+    for(ui = 0; ui < uiCount; ui++){
+        vPrintOneAttrByType(&sAttrs[ui], spStream);
     }
     fprintf(spStream, "\n");
 }
@@ -320,37 +355,19 @@ void vAttrsByType(attrs_ctx* spAtt, FILE* spStream){
  * This function is only called internally, hence the context pointer is already cast correctly.
  * \param spStream An open stream to display to.
  */
-void vAttrsByName(attrs_ctx* spAtt, FILE* spStream){
+void vAttrsByName(api_attr* spAttrs, aint uiCount, FILE* spStream){
     aint ui;
-    api_attr_w* a;
-    aint uiRuleCount = spAtt->spApi->uiRuleCount;
-    api_attr_w sAttrs[uiRuleCount];
-    for(ui = 0; ui < uiRuleCount; ui++){
-        sAttrs[ui] = spAtt->spAttrs[ui];
+    api_attr sAttrs[uiCount];
+    for(ui = 0; ui < uiCount; ui++){
+        sAttrs[ui] = spAttrs[ui];
     }
-    qsort((void*)&sAttrs[0], uiRuleCount, sizeof(api_attr_w), iCompName);
+    qsort((void*)&sAttrs[0], uiCount, sizeof(api_attr), iCompName);
 
     fprintf(spStream, "ATTRIBUTES BY NAME\n");
     fprintf(spStream, "   left | nested |  right | cyclic |  empty | finite |   name\n");
     fprintf(spStream, "--------|--------|--------|--------|--------|--------|--------\n");
-    if(spAtt->uiErrorCount){
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &sAttrs[ui];
-            if(a->bLeft|| !a->bFinite || a->bCyclic){
-                vPrintOneAttrByName(a, spStream);
-            }
-        }
-        fprintf(spStream, "\n");
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &sAttrs[ui];
-            if(!(a->bLeft|| !a->bFinite || a->bCyclic)){
-                vPrintOneAttrByName(a, spStream);
-            }
-        }
-    }else{
-        for(ui = 0; ui < uiRuleCount; ui++){
-            vPrintOneAttrByName(&sAttrs[ui], spStream);
-        }
+    for(ui = 0; ui < uiCount; ui++){
+        vPrintOneAttrByName(&sAttrs[ui], spStream);
     }
     fprintf(spStream, "\n");
 }
@@ -359,43 +376,25 @@ void vAttrsByName(attrs_ctx* spAtt, FILE* spStream){
  * This function is only called internally, hence the context pointer is already cast correctly.
  * \param spStream An open stream to display to.
  */
-void vAttrsByIndex(attrs_ctx* spAtt, FILE* spStream){
+void vAttrsByIndex(api_attr* spAttrs, aint uiCount, FILE* spStream){
     aint ui;
-    api_attr_w* a;
-    aint uiRuleCount = spAtt->spApi->uiRuleCount;
     fprintf(spStream, "ATTRIBUTES BY INDEX\n");
     fprintf(spStream, "   left | nested |  right | cyclic |  empty | finite |   name\n");
     fprintf(spStream, "--------|--------|--------|--------|--------|--------|--------\n");
-    if(spAtt->uiErrorCount){
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &spAtt->spAttrs[ui];
-            if(a->bLeft|| !a->bFinite || a->bCyclic){
-                vPrintOneAttrByName(a, spStream);
-            }
-        }
-        fprintf(spStream, "\n");
-        for(ui = 0; ui < uiRuleCount; ui++){
-            a = &spAtt->spAttrs[ui];
-            if(!(a->bLeft|| !a->bFinite || a->bCyclic)){
-                vPrintOneAttrByName(a, spStream);
-            }
-        }
-    }else{
-        for(ui = 0; ui < uiRuleCount; ui++){
-            vPrintOneAttrByName(&spAtt->spAttrs[ui], spStream);
-        }
+    for(ui = 0; ui < uiCount; ui++){
+        vPrintOneAttrByName(&spAttrs[ui], spStream);
     }
     fprintf(spStream, "\n");
 }
 
 static int iCompName(const void* vpL, const void* vpR) {
-    api_attr_w* spL = (api_attr_w*) vpL;
-    api_attr_w* spR = (api_attr_w*) vpR;
+    api_attr* spL = (api_attr*) vpL;
+    api_attr* spR = (api_attr*) vpR;
     aint uiLenL = strlen(spL->cpRuleName);
     aint uiLenR = strlen(spR->cpRuleName);
     char l, r;
-    char* cpL = spL->cpRuleName;
-    char* cpR = spR->cpRuleName;
+    const char* cpL = spL->cpRuleName;
+    const char* cpR = spR->cpRuleName;
     aint uiLesser = uiLenL < uiLenR ? uiLenL : uiLenR;
     while (uiLesser--) {
         l = *cpL;
@@ -460,8 +459,8 @@ static const char * cpShouldBeFalse(abool aTF){
     return s_cpUndef;
 }
 static int iCompType(const void* vpL, const void* vpR) {
-    api_attr_w* spL = (api_attr_w*)vpL;
-    api_attr_w* spR = (api_attr_w*)vpR;
+    api_attr* spL = (api_attr*)vpL;
+    api_attr* spR = (api_attr*)vpR;
     if(spL->uiRecursiveType == ID_ATTR_MR && spR->uiRecursiveType == ID_ATTR_MR){
         if(spL->uiMRGroup < spR->uiMRGroup){
             return -1;

@@ -129,12 +129,10 @@ void vRuleAttributes(attrs_ctx* spAtt) {
 
     // set the public attributes and check for errors
     spAtt->uiErrorCount = 0;
-    api_attr* spPub = NULL;
+    api_attr* spPub = spAtt->spPublicAttrs;
     api_attr* spErr = spAtt->spErrorAttrs;
-    api_attr_w* spWork = NULL;
+    api_attr_w* spWork = spAtt->spAttrs;
     for(ui = 0; ui < uiRuleCount; ui++){
-        spPub = &spAtt->spPublicAttrs[ui];
-        spWork = &spAtt->spAttrs[ui];
         spPub->bCyclic = spWork->bCyclic;
         spPub->bLeft = spWork->bLeft;
         spPub->bRight = spWork->bRight;
@@ -143,6 +141,8 @@ void vRuleAttributes(attrs_ctx* spAtt) {
         spPub->bEmpty = spWork->bEmpty;
         spPub->cpRuleName = spWork->cpRuleName;
         spPub->uiRuleIndex = spWork->uiRuleIndex;
+        spPub->uiRecursiveType = spWork->uiRecursiveType;
+        spPub->uiMRGroup = spWork->uiMRGroup;
         if(spPub->bLeft || spPub->bCyclic || !spPub->bFinite){
             spErr->bCyclic = spWork->bCyclic;
             spErr->bLeft = spWork->bLeft;
@@ -152,9 +152,13 @@ void vRuleAttributes(attrs_ctx* spAtt) {
             spErr->bEmpty = spWork->bEmpty;
             spErr->cpRuleName = spWork->cpRuleName;
             spErr->uiRuleIndex = spWork->uiRuleIndex;
+            spErr->uiRecursiveType = spWork->uiRecursiveType;
+            spErr->uiMRGroup = spWork->uiMRGroup;
             spErr++;
             spAtt->uiErrorCount++;
         }
+        spPub++;
+        spWork++;
     }
 }
 

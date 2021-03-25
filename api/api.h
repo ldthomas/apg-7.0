@@ -73,6 +73,8 @@ typedef struct {
     abool bEmpty; /**< \brief  APG_TRUE if the rule can be empty */
     const char *cpRuleName; /**< \brief  the rule name for these attributes */
     aint uiRuleIndex; /**< \brief  the index of the rule for these attributes */
+    aint uiRecursiveType; /**< \brief  ID_ATTR_N, ID_ATTR_R, ID_ATTR_MR, ID_ATTR_NMR, or ID_ATTR_RMR */
+    aint uiMRGroup; /**< \brief  the group number, if this is a member of a mutually-recursive group (there may be multiple groups) */
 } api_attr;
 
 /** \struct pppt_size

@@ -136,7 +136,7 @@ void vApiRulesToHtml(void *vpCtx, const char *cpFileName) {
     }
     FILE *spOut = stdout;
     attrs_ctx *spAttrsCtx = (attrs_ctx*) spApi->vpAttrsCtx;
-    if (!spApi->bAttributesValid || !spAttrsCtx) {
+    if (!spApi->bAttributesComputed || !spAttrsCtx) {
         XTHROW(spApi->spException,
                 "cannot display rule dependencies without attributes (bApiAttrs())");
     }
