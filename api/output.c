@@ -147,11 +147,9 @@ static void vTestNames();
  * \param cpOutput The root of the file name to use for the generated source and header files.
  * Any extension will be stripped and replaces with .h for the header file and .c for the source file.
  * The name may be relative or absolute. Any directories in the pathname must exist.
- * \param bIgnoreAttributes If true, files will be generated without regard to whether attributes have been generated or not.
- * Allows the caller to side-step or ignore attributes. NOT RECOMMENDED.
  * \return Throws exceptions on errors.
  */
-void vApiOutput(void* vpCtx, const char* cpOutput, abool bIgnoreAttributes) {
+void vApiOutput(void* vpCtx, const char* cpOutput) {
     if(!bApiValidate(vpCtx)){
         vExContext();
     }
@@ -173,12 +171,6 @@ void vApiOutput(void* vpCtx, const char* cpOutput, abool bIgnoreAttributes) {
     if (!spApi->bSemanticsValid) {
         XTHROW(spApi->spException,
                 "attempted output but opcodes have not been constructed and validated");
-    }
-    if(!bIgnoreAttributes){
-        if (!spApi->bAttributesValid) {
-            XTHROW(spApi->spException,
-                    "attempted output but attributes have not been constructed and validated");
-        }
     }
 
     // generate the header file
@@ -220,11 +212,9 @@ void vApiOutput(void* vpCtx, const char* cpOutput, abool bIgnoreAttributes) {
  * But the API and the generated parser must each call their respective destructors to prevent memory leaks.
  *
  * \param vpCtx - Pointer to an API context previously returned from vpApiCtor().
- * \param bIgnoreAttributes If true, files will be generated without regard to whether attributes have been generated or not.
- * Allows the caller to side-step or ignore attributes. NOT RECOMMENDED.
  * \return Throws exceptions on errors.
  */
-void* vpApiOutputParser(void* vpCtx, abool bIgnoreAttributes) {
+void* vpApiOutputParser(void* vpCtx) {
     if(!bApiValidate(vpCtx)){
         vExContext();
     }
@@ -239,12 +229,6 @@ void* vpApiOutputParser(void* vpCtx, abool bIgnoreAttributes) {
     }
     if (!spApi->bSemanticsValid) {
         XTHROW(spApi->spException, "attempted output but opcodes have not been constructed and validated");
-    }
-    if(!bIgnoreAttributes){
-        if (!spApi->bAttributesValid) {
-            XTHROW(spApi->spException,
-                    "attempted output but attributes have not been constructed and validated");
-        }
     }
 
     // generate the parser

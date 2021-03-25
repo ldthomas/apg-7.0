@@ -502,54 +502,6 @@ void vApiOpcodesToAscii(void *vpCtx, const char* cpFileName) {
     }
 }
 
-/** \brief Display all rule attributes.
- * \param vpCtx - Pointer to an API context previously returned from vpApiCtor().
- * \param cpMode (note: the first character (case-insensitive) of the following options is all that is needed)
- *  - "index" sort attributes by rule name index (the order they appear in the grammar syntax)
- *  - "alpha" sort attributes by rule name alphabetically
- *  - "type" sort attributes by type (non-recursive, recursive, etc.). Rules are alphabetical within each type.
- *  - NULL, empty string or any string not beginning with "a" or "t" defaults to "index"
- * \param cpFileName - Name of the file to display on.
- * Any directories in the path name must exist.
- * If NULL, stdout is used.
- */
-void vApiAttrsToAscii(void *vpCtx, const char *cpMode, const char* cpFileName) {
-    api *spApi = (api*) vpCtx;
-    if (!vpCtx || (spApi->vpValidate != s_vpMagicNumber)) {
-        vExContext();
-    }
-    if (!spApi->bAttributesValid) {
-        XTHROW(spApi->spException,
-                "no attributes available - call the attributes constructor vApiAttrs()");
-    }
-    FILE *spOut = stdout;
-    if(cpFileName){
-        spOut = fopen(cpFileName, "wb");
-        if (!spOut) {
-            char caBuf[126];
-            snprintf(caBuf, 126, "cannot open file name %s for writing", cpFileName);
-            XTHROW(spApi->spException, caBuf);
-        }
-    }
-    attrs_ctx *spAtt = (attrs_ctx*) spApi->vpAttrsCtx;
-    if(cpMode){
-        if (cpMode[0] == 'a' || cpMode[0] == 'A') {
-            vAttrsByName(spAtt, spOut);
-        } else if (cpMode[0] == 't' || cpMode[0] == 'T') {
-            vAttrsByType(spAtt, spOut);
-        } else {
-            // default to index
-            vAttrsByIndex(spAtt, spOut);
-        }
-    }else{
-        // default to index
-        vAttrsByIndex(spAtt, spOut);
-    }
-    if(spOut != stdout){
-        fclose(spOut);
-    }
-}
-
 /** \brief Quicky way to generate a parser from a grammar file.
  *
  * Calls all of the intermediate steps in one function.
@@ -572,7 +524,7 @@ void vApiFile(void *vpCtx, const char *cpFileName, abool bStrict, abool bPppt){
     vApiInValidate(vpCtx, bStrict);
     vApiSyntax(vpCtx, bStrict);
     vApiOpcodes(vpCtx);
-    spApiAttrs(vpCtx, NULL);
+    bApiAttrs(vpCtx);
     if(bPppt){
         vApiPppt(vpCtx, NULL, 0);
     }
@@ -599,7 +551,7 @@ void vApiString(void *vpCtx, const char *cpString, abool bStrict, abool bPppt){
     vApiInValidate(vpCtx, bStrict);
     vApiSyntax(vpCtx, bStrict);
     vApiOpcodes(vpCtx);
-    spApiAttrs(vpCtx, NULL);
+    bApiAttrs(vpCtx);
     if(bPppt){
         vApiPppt(vpCtx, NULL, 0);
     }

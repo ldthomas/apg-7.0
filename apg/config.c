@@ -69,7 +69,6 @@ typedef struct {
     abool bHelp; /**< \brief the help flag, if set the help screen is printed and processing stops */
     abool bVersion; /**< \brief the version flag, if set the version number is printed and processing stops */
     abool bStrict; /**< \brief if set, the grammar is treated as strict ABNF */
-    abool bIgnoreAttrs; /**< \brief if set, skip the attribute calculation */
     abool bNoPppt; /**< \brief if set, skip the PPPT calculation */
     abool bDc; /**< \brief display the complete configuration as found on command line or configuration file */
     abool bDv; /**< \brief verbose display of information during processing - sets uiDg, uiDa, uiDr and uiDc */
@@ -234,7 +233,6 @@ void vConfigHelp(void){
         printf("-v                    : display version information\n");
         printf("--version             : display version information\n");
         printf("--strict              : only ABNF as strictly defined in RFC 5234 allowed\n");
-        printf("--ignore-attributes   : attribute information will not be computed, proceed at your own risk\n");
         printf("--no-pppt             : do not produce Partially-Predictive Parsing Tables (PPPTs)\n");
         printf("\n");
         printf("display flags\n");
@@ -692,10 +690,6 @@ static void vExtractArgOptions(config_ctx* spCtx, char* cpParams) {
             spCtx->bStrict = APG_TRUE;
             uiStrLen = (aint) (strlen(cpParams) + 1);
             cpParams += uiStrLen;
-        } else if (strcmp(cpParams, "--ignore-attributes") == 0) {
-            spCtx->bIgnoreAttrs = APG_TRUE;
-            uiStrLen = (aint) (strlen(cpParams) + 1);
-            cpParams += uiStrLen;
         } else if (strcmp(cpParams, "--no-pppt") == 0) {
             spCtx->bNoPppt = APG_TRUE;
             uiStrLen = (aint) (strlen(cpParams) + 1);
@@ -931,7 +925,6 @@ static config* spGetConfig(config_ctx* spCtx){
     spConfig->bHelp = spCtx->bHelp;
     spConfig->bVersion = spCtx->bVersion;
     spConfig->bStrict = spCtx->bStrict;
-    spConfig->bIgnoreAttrs = spCtx->bIgnoreAttrs;
     spConfig->bNoPppt = spCtx->bNoPppt;
     spConfig->bDc = spCtx->bDc;
     spConfig->bDv = spCtx->bDv;

@@ -177,12 +177,18 @@ int main(int argc, char **argv) {
         }
 
         // API - get the attributes - attribute phase
-        spApiAttrs(vpApi, NULL);
-        if(spConfig->cpRulesHtml){
-            vApiRulesToHtml(vpApi, spConfig->cpRulesHtml);
-        }
-        if (spConfig->bDa) {
-            vApiAttrsToAscii(vpApi, "type", NULL);
+        if(bApiAttrs(vpApi)){
+            if (spConfig->bDa) {
+                vApiAttrsToAscii(vpApi, "type", NULL);
+            }
+        }else{
+            printf("ATTRIBUTE ERRORS DETECTED\n");
+//            vApiAttrsErrorsToAscii(vpApi, "type", NULL);
+            if (spConfig->bDa) {
+                printf("\n");
+                vApiAttrsToAscii(vpApi, "type", NULL);
+            }
+            break;
         }
 
         // PPPT
@@ -192,7 +198,8 @@ int main(int argc, char **argv) {
 
         // output the parser files
         if (spConfig->cpOutput) {
-            vApiOutput(vpApi, spConfig->cpOutput, APG_FALSE);
+            vApiOutput(vpApi, spConfig->cpOutput);
+            printf("generated parser output to: %s\n", spConfig->cpOutput);
         }
         break;
     }

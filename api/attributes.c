@@ -76,7 +76,7 @@ static attrs_ctx* spAttrsCtor(api* spApi);
  * \return Returns a pointer to an array of api_attr structures, one for each rule in the grammar.
  * Throws exception on fatal error.
  */
-const api_attr* spApiAttrs(void* vpCtx, aint* uipCount) {
+abool bApiAttrs(void* vpCtx) {
     if(!bApiValidate(vpCtx)){
         vExContext();
     }
@@ -96,68 +96,12 @@ const api_attr* spApiAttrs(void* vpCtx, aint* uipCount) {
     // compute the rule attributes
     vRuleAttributes(spAtt);
 
-    // set the public attributes
-    aint ui = 0;
-    for(; ui < spApi->uiRuleCount; ui++){
-        api_attr* spPub = &spAtt->spPublicAttrs[ui];
-        api_attr_w* spWork = &spAtt->spAttrs[ui];
-        spPub->bCyclic = spWork->bCyclic;
-        spPub->bLeft = spWork->bLeft;
-        spPub->bRight = spWork->bRight;
-        spPub->bNested = spWork->bNested;
-        spPub->bFinite = spWork->bFinite;
-        spPub->bEmpty = spWork->bEmpty;
-        spPub->cpRuleName = spWork->cpRuleName;
-        spPub->uiRuleIndex = spWork->uiRuleIndex;
-    }
-    if(uipCount){
-        *uipCount = spApi->uiRuleCount;
+    spApi->bAttributesComputed = APG_TRUE;
+    if(spAtt->uiErrorCount){
+        return APG_FALSE;
     }
     spApi->bAttributesValid = APG_TRUE;
-    return (const api_attr*)spAtt->spPublicAttrs;
-}
-
-/** \brief Get a list of all the attributes that have errors.
- *
- * \param vpCtx - Pointer to an API context previously returned from vpApiCtor().
- * \param uipCount - Pointer to an integer. Set to the number (count) of attributes.
- * May be NULL if no count is wanted.
- * \return Returns a pointer to an array of api_attr structures, one for each rule in the grammar.
- */
-const api_attr* spApiAttrsErrors(void *vpCtx, aint* uipCount){
-    if(!bApiValidate(vpCtx)){
-        vExContext();
-    }
-    api* spApi = (api*) vpCtx;
-    if(!spApi->bAttributesValid){
-        XTHROW(spApi->spException,
-                "attempting to find attribute errors before attributes (vApiAttrs()) are complete");
-    }
-    attrs_ctx* spAtt = (attrs_ctx*)spApi->vpAttrsCtx;;
-    aint ui = 0;
-    aint uiNum = 0;
-    for(; ui < spApi->uiRuleCount; ui++){
-        api_attr* spPub = &spAtt->spPublicAttrs[ui];
-        api_attr* spError = &spAtt->spErrorAttrs[ui];
-        if(spPub->bLeft || spPub->bCyclic || !spPub->bFinite){
-            spError->bCyclic = spPub->bCyclic;
-            spError->bLeft = spPub->bLeft;
-            spError->bRight = spPub->bRight;
-            spError->bNested = spPub->bNested;
-            spError->bFinite = spPub->bFinite;
-            spError->bEmpty = spPub->bEmpty;
-            spError->cpRuleName = spPub->cpRuleName;
-            spError->uiRuleIndex = spPub->uiRuleIndex;
-            uiNum++;
-        }
-    }
-    if(uipCount){
-        *uipCount = uiNum;
-    }
-    if(uiNum){
-        return spAtt->spErrorAttrs;
-    }
-    return NULL;
+    return APG_TRUE;
 }
 
 /** \brief Construct an attribute object.
@@ -259,6 +203,54 @@ void vAttrsDtor(void* vpCtx) {
         }else{
             vExContext();
         }
+    }
+}
+
+/** \brief Display all rule attributes.
+ * \param vpCtx - Pointer to an API context previously returned from vpApiCtor().
+ * \param cpMode (note: the first character (case-insensitive) of the following options is all that is needed)
+ *  - "index" sort attributes by rule name index (the order they appear in the grammar syntax)
+ *  - "alpha" sort attributes by rule name alphabetically
+ *  - "type" sort attributes by type (non-recursive, recursive, etc.). Rules are alphabetical within each type.
+ *  - NULL, empty string or any string not beginning with "a" or "t" defaults to "index"
+ * \param cpFileName - Name of the file to display on.
+ * Any directories in the path name must exist.
+ * If NULL, stdout is used.
+ */
+void vApiAttrsToAscii(void *vpCtx, const char *cpMode, const char* cpFileName) {
+    if (!vpCtx || !bApiValidate(vpCtx)) {
+        vExContext();
+    }
+    api *spApi = (api*) vpCtx;
+    if (!spApi->bAttributesComputed) {
+        XTHROW(spApi->spException,
+                "no attributes available - must first call bApiAttrs()");
+    }
+    FILE *spOut = stdout;
+    if(cpFileName){
+        spOut = fopen(cpFileName, "wb");
+        if (!spOut) {
+            char caBuf[126];
+            snprintf(caBuf, 126, "cannot open file name %s for writing", cpFileName);
+            XTHROW(spApi->spException, caBuf);
+        }
+    }
+    attrs_ctx *spAtt = (attrs_ctx*) spApi->vpAttrsCtx;
+    if(cpMode){
+        if (cpMode[0] == 'a' || cpMode[0] == 'A') {
+            vAttrsByName(spAtt, spOut);
+        } else if (cpMode[0] == 't' || cpMode[0] == 'T') {
+            vAttrsByType(spAtt, spOut);
+        } else {
+            // default to index
+            vAttrsByIndex(spAtt, spOut);
+        }
+    }else{
+        // default to index
+        vAttrsByIndex(spAtt, spOut);
+    }
+    if(spOut != stdout){
+        fclose(spOut);
     }
 }
 

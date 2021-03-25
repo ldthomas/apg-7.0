@@ -181,8 +181,11 @@ typedef struct {
     abool bInputValid; /**< \brief  APG_TRUE if theer is input and it has been validated, APG_FALSE otherwise */
     abool bSyntaxValid; /**< \brief  APG_TRUE if the input syntax is valid, APG_FALSE otherwise */
     abool bSemanticsValid; /**< \brief  APG_TRUE if the the input semantics are valid.
-     That is, the opcodes for the parser have been generated. APG_FALSE otherwise */
-    abool bAttributesValid; /**< \brief  APG_TRUE if there the generated opcodes have no fatal attributes, APG_FALSE otherwise. */
+         That is, the opcodes for the parser have been generated. APG_FALSE otherwise */
+    abool bAttributesValid; /**< \brief  APG_TRUE if there the rule attributes have
+        been computed and have no fatal errors, APG_FALSE otherwise. */
+    abool bAttributesComputed; /**< \brief  APG_TRUE if attributes have been computed
+        (even is there are attribute errors), APG_FALSE otherwise. */
 } api;
 
 void vLineError(api *spCtx, aint uiCharIndex, const char *cpSrc, const char *cpMsg);

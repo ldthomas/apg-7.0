@@ -127,11 +127,32 @@ void vRuleAttributes(attrs_ctx* spAtt) {
         spAtt->spAttrs[ui] = spAtt->spWorkingAttrs[ui];
     }
 
-    // check for errors
+    // set the public attributes and check for errors
     spAtt->uiErrorCount = 0;
+    api_attr* spPub = NULL;
+    api_attr* spErr = spAtt->spErrorAttrs;
+    api_attr_w* spWork = NULL;
     for(ui = 0; ui < uiRuleCount; ui++){
-        api_attr_w* a = &spAtt->spAttrs[ui];
-        if(a->bLeft|| !a->bFinite || a->bCyclic){
+        spPub = &spAtt->spPublicAttrs[ui];
+        spWork = &spAtt->spAttrs[ui];
+        spPub->bCyclic = spWork->bCyclic;
+        spPub->bLeft = spWork->bLeft;
+        spPub->bRight = spWork->bRight;
+        spPub->bNested = spWork->bNested;
+        spPub->bFinite = spWork->bFinite;
+        spPub->bEmpty = spWork->bEmpty;
+        spPub->cpRuleName = spWork->cpRuleName;
+        spPub->uiRuleIndex = spWork->uiRuleIndex;
+        if(spPub->bLeft || spPub->bCyclic || !spPub->bFinite){
+            spErr->bCyclic = spWork->bCyclic;
+            spErr->bLeft = spWork->bLeft;
+            spErr->bRight = spWork->bRight;
+            spErr->bNested = spWork->bNested;
+            spErr->bFinite = spWork->bFinite;
+            spErr->bEmpty = spWork->bEmpty;
+            spErr->cpRuleName = spWork->cpRuleName;
+            spErr->uiRuleIndex = spWork->uiRuleIndex;
+            spErr++;
             spAtt->uiErrorCount++;
         }
     }
@@ -141,7 +162,7 @@ static void vAttrsInit(api_attr_w* spAttrs){
     spAttrs->bLeft = APG_FALSE;
     spAttrs->bNested = APG_FALSE;
     spAttrs->bRight = APG_FALSE;
-    spAttrs->bCyclic = APG_TRUE;
+    spAttrs->bCyclic = APG_FALSE;
     spAttrs->bEmpty = APG_FALSE;
     spAttrs->bFinite = APG_FALSE;
     spAttrs->bIsOpen = APG_FALSE;
@@ -154,21 +175,10 @@ static void vRuleAttrs(attrs_ctx* spAtt, aint uiRuleIndex, api_attr_w* spAttrs) 
 
     TRACE_RULE_OPEN(spAtt, spAtt->spWorkingAttrs[uiRuleIndex].cpRuleName);
     spRuleAttrs = &spAtt->spWorkingAttrs[uiRuleIndex];
-    while (APG_TRUE) {
-        if (spRuleAttrs->bIsComplete) {
-            // use final attributes
-            *spAttrs = *spRuleAttrs;
-            break;
-        }
-        if (spRuleAttrs->bIsOpen) {
-            // use recursive leaf values
-            if(uiRuleIndex == spAtt->uiStartRule){
-                spAttrs->bLeft = APG_TRUE;
-                spAttrs->bRight = APG_TRUE;
-                spAttrs->bCyclic = APG_TRUE;
-            }
-            break;
-        }
+    if (spRuleAttrs->bIsComplete) {
+        // use final attributes
+        *spAttrs = *spRuleAttrs;
+    }else if (!spRuleAttrs->bIsOpen) {
         // open the rule and traverse it
         spRuleAttrs->bIsOpen = APG_TRUE;
         spOp = &spAtt->spApi->spOpcodes[spAtt->spApi->spRules[uiRuleIndex].uiOpOffset];
@@ -183,7 +193,14 @@ static void vRuleAttrs(attrs_ctx* spAtt, aint uiRuleIndex, api_attr_w* spAttrs) 
         spRuleAttrs->bCyclic = spAttrs->bCyclic;
         spRuleAttrs->bIsOpen = APG_FALSE;
         spRuleAttrs->bIsComplete = APG_TRUE;
-        break;
+    }else if(uiRuleIndex == spAtt->uiStartRule){
+        // use recursive leaf values
+        spAttrs->bLeft = APG_TRUE;
+        spAttrs->bRight = APG_TRUE;
+        spAttrs->bCyclic = APG_TRUE;
+    }else{
+        // handle non-start rule terminal leaf
+        spAttrs->bFinite = APG_TRUE;
     }
     TRACE_RULE_CLOSE(spAtt, spRuleAttrs->cpRuleName, spAttrs);
 }
@@ -221,13 +238,13 @@ static void vOpcodeAttrs(attrs_ctx* spAtt, api_op* spOp, api_attr_w* spAttrs) {
     case ID_TLS:
         spAttrs->bEmpty = spOp->uiAcharLength ? APG_FALSE : APG_TRUE;
         spAttrs->bFinite = APG_TRUE;
-        spAttrs->bCyclic = APG_FALSE;
+//        spAttrs->bCyclic = APG_FALSE;
         break;
     case ID_TRG:
     case ID_TBS:
         spAttrs->bEmpty = APG_FALSE;
         spAttrs->bFinite = APG_TRUE;
-        spAttrs->bCyclic = APG_FALSE;
+//        spAttrs->bCyclic = APG_FALSE;
         break;
     case ID_UDT:
         spAttrs->bEmpty = spOp->uiEmpty ? APG_TRUE : APG_FALSE;
@@ -238,7 +255,7 @@ static void vOpcodeAttrs(attrs_ctx* spAtt, api_op* spOp, api_attr_w* spAttrs) {
     case ID_AEN:
         spAttrs->bEmpty = APG_TRUE;
         spAttrs->bFinite = APG_TRUE;
-        spAttrs->bCyclic = APG_FALSE;
+//        spAttrs->bCyclic = APG_FALSE;
         break;
     default:
         XTHROW(spAtt->spException, "unknown opcode id encountered");
@@ -342,7 +359,7 @@ static abool bIsCatLeft(api_attr_w* spChild, aint uiCount) {
     aint ui = 0;
     for (; ui < uiCount; ui++) {
         if (spChild[ui].bLeft == APG_TRUE) {
-            // if left-most, non-empty child is left or leaf, CAT is left
+            // if left-most, non-empty child is left, CAT is left
             bReturn = APG_TRUE;
             break;
         } else if (!spChild[ui].bEmpty) {
@@ -359,7 +376,7 @@ static abool bIsCatRight(api_attr_w* spChild, aint uiCount) {
     for (ui = uiCount; ui > 0; ui--) {
         uii = ui -1;
         if (spChild[uii].bRight == APG_TRUE) {
-            // if right-most child is right or leaf, CAT is right
+            // if right-most child is right, CAT is right
             bReturn = APG_TRUE;
             break;
         } else if (!spChild[uii].bEmpty) {
@@ -370,17 +387,14 @@ static abool bIsCatRight(api_attr_w* spChild, aint uiCount) {
     }
     return bReturn;
 }
-static abool bIsRecursive(api_attr_w* spAttrs) {
-    if (spAttrs->bLeft) {
-        return APG_TRUE;
+static abool bEmptyOnly(api_attr_w* spAttr) {
+    if(spAttr->bLeft || spAttr->bNested ||spAttr->bRight || spAttr->bCyclic){
+        return APG_FALSE;
     }
-    if (spAttrs->bNested) {
-        return APG_TRUE;
-    }
-    if (spAttrs->bRight) {
-        return APG_TRUE;
-    }
-    if (spAttrs->bCyclic) {
+    return spAttr->bEmpty;
+}
+static abool bIsRecursive(api_attr_w* spAttr) {
+    if(spAttr->bLeft || spAttr->bNested ||spAttr->bRight || spAttr->bCyclic){
         return APG_TRUE;
     }
     return APG_FALSE;
@@ -402,10 +416,10 @@ static abool bIsCatNested(api_attr_w* spChild, aint uiCount) {
         // 2.) the left-most right recursive child is followed by at least one non-empty child
         for (ui = 0; ui < uiCount; ui++) {
             spAi = &spChild[ui];
-            if (!spAi->bEmpty && (spAi->bRight && !spAi->bLeft)) {
+            if (spAi->bRight) {
                 for (uj = ui + 1; uj < uiCount; uj++) {
                     spAj = &spChild[uj];
-                    if (!spAj->bEmpty) {
+                    if (!bEmptyOnly(spAj)) {
                         goto nested;
                     }
                 }
@@ -415,10 +429,10 @@ static abool bIsCatNested(api_attr_w* spChild, aint uiCount) {
         // 3.) the right-most left-recursive child is preceded by at least one non-empty child
         for (ui = uiCount; ui > 0; ui--) {
             spAi = &spChild[ui - 1];
-            if (!spAi->bEmpty && (spAi->bLeft && !spAi->bRight)) {
+            if (spAi->bLeft) {
                 for (uj = ui; uj > 0; uj--) {
                     spAj = &spChild[uj - 1];
-                    if (!spAj->bEmpty) {
+                    if (!bEmptyOnly(spAj)) {
                         goto nested;
                     }
                 }
@@ -428,13 +442,13 @@ static abool bIsCatNested(api_attr_w* spChild, aint uiCount) {
         // 4.) there is at least one recursive child between the left-most and right-most non-recursive children
         for (ui = 0; ui < uiCount; ui++) {
             spAi = &spChild[ui];
-            if (!spAi->bEmpty) {
+            if (!spAi->bEmpty && !bIsRecursive(spAi)) {
                 for (uj = ui + 1; uj < uiCount; uj++) {
                     spAj = &spChild[uj];
                     if (bIsRecursive(spAj)) {
                         for (uk = uj + 1; uk < uiCount; uk++) {
                             spAk = &spChild[uk];
-                            if (!spAk->bEmpty) {
+                            if (!spAk->bEmpty && !bIsRecursive(spAk)) {
                                 goto nested;
                             }
                         }

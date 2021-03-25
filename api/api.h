@@ -137,9 +137,10 @@ void vApiRulesToHtml(void *vpCtx, const char *cpFileName);
  * any fatal aspects or attributes of the grammar.
  * */
 ///@{
-const api_attr* spApiAttrs(void *vpCtx, aint* uipCount);
-const api_attr* spApiAttrsErrors(void *vpCtx, aint* uipCount);
+abool bApiAttrs(void *vpCtx);
+//const api_attr* spApiAttrsErrors(void *vpCtx, aint* uipCount);
 void vApiAttrsToAscii(void *vpCtx, const char *cpMode, const char *cpFileName);
+void vApiAttrsErrorsToAscii(void *vpCtx, const char *cpMode, const char *cpFileName);
 ///@}
 
 // the Partially-Predictive Parsing Tables (PPPT)
@@ -173,8 +174,8 @@ void vApiString(void *vpCtx, const char *cpString, abool bStrict, abool bPppt);
  * Or a parser object, completely independent of the API, can be generated.
  * */
 ///@{
-void vApiOutput(void *vpCtx, const char *cpOutput, abool bIgnoreAttributes);
-void* vpApiOutputParser(void* vpCtx, abool bIgnoreAttributes);
+void vApiOutput(void *vpCtx, const char *cpOutput);
+void* vpApiOutputParser(void* vpCtx);
 ///@}
 
 /** \page api The Parser Generator API

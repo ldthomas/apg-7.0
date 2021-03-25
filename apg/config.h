@@ -119,7 +119,6 @@ typedef struct {
     abool bHelp; /**< \brief the help flag, if set the help screen is printed and processing stops */
     abool bVersion; /**< \brief the version flag, if set the version number is printed and processing stops */
     abool bStrict; /**< \brief if set, the grammar is treated as strict ABNF */
-    abool bIgnoreAttrs; /**< \brief if set, the grammar attributes are not calculates, generator assumes they are OK*/
     abool bNoPppt; /**< \brief if set, Partially-Predictive Parsing Tables (PPPTs) will not be produced */
     abool bDv; /**< \brief verobose - sets options -dc, -dg, -dr, and -da  */
     abool bDc; /**< \brief display the complete configuration as found on command line or configuration file */
