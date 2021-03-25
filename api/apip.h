@@ -103,6 +103,7 @@ typedef struct {
     abool bCyclic; /**< \brief  APG_TRUE if the rule is cyclic */
     abool bFinite; /**< \brief  APG_TRUE if the rule is finite */
     abool bEmpty; /**< \brief  APG_TRUE if the rule can be empty */
+    abool bLeaf; /**< \brief APG_TRUE if this is a leaf rule (appears for a second time on a branch) */
     char *cpRuleName; /**< \brief  the rule name for these attributes */
     aint uiRuleIndex; /**< \brief  the index of the rule for these attributes */
     aint uiRecursiveType; /**< \brief  ID_ATTR_N, ID_ATTR_R, ID_ATTR_MR, ID_ATTR_NMR, or ID_ATTR_RMR */

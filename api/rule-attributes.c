@@ -165,6 +165,7 @@ static void vAttrsInit(api_attr_w* spAttrs){
     spAttrs->bCyclic = APG_FALSE;
     spAttrs->bEmpty = APG_FALSE;
     spAttrs->bFinite = APG_FALSE;
+    spAttrs->bLeaf = APG_FALSE;
     spAttrs->bIsOpen = APG_FALSE;
     spAttrs->bIsComplete = APG_FALSE;
 }
@@ -198,6 +199,7 @@ static void vRuleAttrs(attrs_ctx* spAtt, aint uiRuleIndex, api_attr_w* spAttrs) 
         spAttrs->bLeft = APG_TRUE;
         spAttrs->bRight = APG_TRUE;
         spAttrs->bCyclic = APG_TRUE;
+        spAttrs->bLeaf = APG_TRUE;
     }else{
         // handle non-start rule terminal leaf
         spAttrs->bFinite = APG_TRUE;
@@ -413,10 +415,10 @@ static abool bIsCatNested(api_attr_w* spChild, aint uiCount) {
             }
         }
 
-        // 2.) the left-most right recursive child is followed by at least one non-empty child
+        // 2.) the left-most right recursive, non-leaf child is followed by at least one non-empty child
         for (ui = 0; ui < uiCount; ui++) {
             spAi = &spChild[ui];
-            if (spAi->bRight) {
+            if (spAi->bRight && !spAi->bLeaf) {
                 for (uj = ui + 1; uj < uiCount; uj++) {
                     spAj = &spChild[uj];
                     if (!bEmptyOnly(spAj)) {
@@ -426,10 +428,10 @@ static abool bIsCatNested(api_attr_w* spChild, aint uiCount) {
             }
         }
 
-        // 3.) the right-most left-recursive child is preceded by at least one non-empty child
+        // 3.) the right-most left-recursive, non-leaf child is preceded by at least one non-empty child
         for (ui = uiCount; ui > 0; ui--) {
             spAi = &spChild[ui - 1];
-            if (spAi->bLeft) {
+            if (spAi->bLeft && !spAi->bLeaf) {
                 for (uj = ui; uj > 0; uj--) {
                     spAj = &spChild[uj - 1];
                     if (!bEmptyOnly(spAj)) {
