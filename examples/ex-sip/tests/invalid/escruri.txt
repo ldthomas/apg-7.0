@@ -1,0 +1,26 @@
+3.1.2.11.  Escaped Headers in SIP Request-URI
+
+   This INVITE is malformed, as the SIP Request-URI contains escaped
+   headers.
+   
+   It is acceptable for an element to reject this request with a 400 Bad
+   Request.  An element could choose to be liberal in what it accepts
+   and ignore the escaped headers.  If the element is a proxy, the
+   escaped headers must not appear in the Request-URI of the forwarded
+   request (and most certainly must not be translated into the actual
+   header of the forwarded request).
+
+      Message Details : escruri
+
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+
+      Escaped characters actually are allowed. The ABNF in RFC 3261 is
+
+      headers         =  "?" header *( "&" header )
+      header          =  hname "=" hvalue
+      hname           =  1*( hnv-unreserved / unreserved / escaped )
+      hvalue          =  *( hnv-unreserved / unreserved / escaped )
+      hnv-unreserved  =  "[" / "]" / "/" / "?" / ":" / "+" / "$"
+
+

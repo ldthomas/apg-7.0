@@ -1,0 +1,11 @@
+3.3.13.  REGISTER with a url-parameter
+
+   This register request contains a contact where the URI has an unknown
+   parameter.
+
+   The register should succeed, and a subsequent retrieval of the
+   registration must include "unknownparam" as a url-parameter.
+
+   Behavior is the same, of course, for any known url-parameter names.
+
+      Message Details : cparam02

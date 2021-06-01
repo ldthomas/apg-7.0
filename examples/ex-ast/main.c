@@ -228,7 +228,7 @@ static int iAst() {
 
         // construct a simple parser without PPPT
         vApiString(vpApi, cpGrammar, APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         vpAst = vpAstCtor(vpParser);
 
         // the parser call back functions

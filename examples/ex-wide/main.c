@@ -77,6 +77,15 @@ The compiled example will execute the following cases. Run the application with 
 */
 #include "../../api/api.h"
 
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+	strcpy(cpBuffer, cpBase);
+	strcat(cpBuffer, cpDivider);
+	strcat(cpBuffer, cpName);
+	return cpBuffer;
+}
+
 static char* s_cpDescription =
         "Illustrate parsing of wide characters.";
 
@@ -141,8 +150,12 @@ static int iLines() {
     aint ui, uiSize;
     my_line* spMyLine;
     const achar* acpBeg, *acpEnd;
-    char* cpInput;
-    char* cpOutput = "../output/cherokee.html";
+    const char* cpInput, *cpInputBig, *cpInputLittle;
+    char* cpOutName = "cherokee.html";
+    char* cpInBig = "cherokee.utf32be";
+    char* cpInLittle = "cherokee.utf32le";
+    const char* cpOutput;
+    char caBufOut[PATH_MAX], caBufIn[PATH_MAX];
     parser_config sConfig;
     parser_state sState;
     exception e;
@@ -160,10 +173,17 @@ static int iLines() {
 
         // get and display the input string
         if(bIsBigEndian()){
-            cpInput = "../input/cherokee.utf32be";
+        	cpInput = cpMakeFileName(caBufIn, SOURCE_DIR, "/../input/", cpInBig);
         }else{
-            cpInput = "../input/cherokee.utf32le";
+        	cpInput = cpMakeFileName(caBufIn, SOURCE_DIR, "/../input/", cpInLittle);
         }
+        cpOutput = cpMakeFileName(caBufOut, SOURCE_DIR, "/../output/", cpOutName);
+
+        // !!!! DEBUG
+        printf(" input file name: %s\n", cpInput);
+        printf("output file name: %s\n", cpOutput);
+        // !!!! DEBUG
+
         uiSize = uiBufSize;
         vUtilFileRead(vpMem, cpInput, ucaBuf, &uiSize);
         if(uiSize > uiBufSize){
@@ -172,7 +192,7 @@ static int iLines() {
 
         // concatenate the grammar from three sources
         vApiString(vpApi, cpCherokee, APG_FALSE, APG_TRUE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // validate the input
         memset(&sConfig, 0, sizeof(sConfig));

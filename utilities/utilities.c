@@ -189,6 +189,7 @@ void vUtilSizes(void) {
 
 /** \brief Display the current working directory. */
 void vUtilCurrentWorkingDirectory(void){
+    printf("CURRENT WORKING DIRECTORY\n");
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("%s\n", cwd);

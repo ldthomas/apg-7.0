@@ -78,6 +78,16 @@ The compiled example will execute the following cases. Run the application with 
 
 #include "../../xml/xml.h"
 
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+static char caBuf[PATH_MAX];
+
 static char* s_cpDescription =
         "Illustrate using the XML parser.";
 
@@ -120,7 +130,6 @@ static int iSimple() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpXml = NULL;
-    char* cpInput = "../input/simple.xml";
     uint8_t ucaBuf[1024];
     aint uiBufSize = 1024;
     aint uiSize;
@@ -130,6 +139,8 @@ static int iSimple() {
         // try block
         vpMem = vpMemCtor(&e);
         vpXml = vpXmlCtor(&e);
+
+        const char* cpInput = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/", "simple.xml");
 
         // display a case header
         char* cpHeader =
@@ -169,7 +180,6 @@ static int iComment() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpXml = NULL;
-    char* cpInput = "../input/comment.xml";
     uint8_t ucaBuf[1024];
     aint uiBufSize = 1024;
     aint uiSize;
@@ -179,6 +189,8 @@ static int iComment() {
         // try block
         vpMem = vpMemCtor(&e);
         vpXml = vpXmlCtor(&e);
+
+        const char* cpInput = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/", "comment.xml");
 
         // display a case header
         char* cpHeader =
@@ -219,8 +231,6 @@ static int iXmlDecl() {
     static void* vpXml = NULL;
     static void* vpFmt = NULL;
     const char* cpLine;
-    char* cpSimple = "../input/simple.xml";
-    char* cpDecl16le = "../input/xml-decl-16le.xml";
     uint8_t ucaBuf[1024];
     aint uiBufSize = 1024;
     aint uiSize;
@@ -240,6 +250,8 @@ static int iXmlDecl() {
                 "Furthermore, the file with the declaration is UTF-16 encoded.";
         printf("\n%s", cpHeader);
 
+        const char* cpSimple = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/", "simple.xml");
+
         printf("\nGet the XML files and use default call back functions for display of the XML declaration.\n");
         printf("XML data from file %s\n", cpSimple);
         uiSize = uiBufSize;
@@ -253,6 +265,8 @@ static int iXmlDecl() {
         vXmlSetXmlDeclCallback(vpXml, DEFAULT_CALLBACK, NULL);
         vXmlSetStartTagCallback(vpXml, DEFAULT_CALLBACK, NULL);
         vXmlParse(vpXml);
+
+        const char* cpDecl16le = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/", "xml-decl-16le.xml");
 
         printf("XML data from file %s\n", cpDecl16le);
         uiSize = uiBufSize;
@@ -288,7 +302,6 @@ static int iDTD() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpXml = NULL;
-    char* cpInput = "../input/dtd-entity-attr.xml";
     uint8_t ucaBuf[1024];
     aint uiBufSize = 1024;
     aint uiSize;
@@ -298,6 +311,8 @@ static int iDTD() {
         // try block
         vpMem = vpMemCtor(&e);
         vpXml = vpXmlCtor(&e);
+
+        const char* cpInput = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/", "dtd-entity-attr.xml");
 
         // display a case header
         char* cpHeader =

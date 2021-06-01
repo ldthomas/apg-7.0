@@ -83,6 +83,17 @@ The compiled example will execute the following cases. Run the application with 
 #include "../../utilities/utilities.h"
 #include "../../api/api.h"
 
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
+static char s_caBuf[PATH_MAX];
+
 static char* s_cpDescription =
         "Illustrate construction of and API object and demonstrate its features.";
 
@@ -144,9 +155,9 @@ static int iInCat() {
         vpApi = vpApiCtor(&e);
 
         // concatenate the grammar from three sources
-        cpApiInFile(vpApi, "../input/float-top.abnf");
+        cpApiInFile(vpApi, cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "float-top.abnf"));
         cpApiInString(vpApi, cpFloatMid);
-        cpApiInFile(vpApi, "../input/float-bot.abnf");
+        cpApiInFile(vpApi, cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "float-bot.abnf"));
 
         // display the concatenated grammar
         printf("\nThe Concatenated Grammar\n");
@@ -332,11 +343,11 @@ static int iInPppt() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // validate the grammar
-        cpApiInFile(vpApi, "../input/json.abnf");
+        cpApiInFile(vpApi, cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "json.abnf"));
         vApiInValidate(vpApi, APG_FALSE);
         vApiSyntax(vpApi, APG_FALSE);
         vApiOpcodes(vpApi);
-        spApiAttrs(vpApi, NULL);
+        bApiAttrs(vpApi);
 
         // display the PPPT size
         printf("\nThe PPPT sizes\n");
@@ -348,7 +359,7 @@ static int iInPppt() {
         printf(" total table size in bytes: %"PRIuMAX"\n", sPpptSize.luiTableSize);
 
         // parse without PPPT
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         memset(&sConfig, 0, sizeof(sConfig));
         sConfig.acpInput = spPhrase->acpPhrase;
         sConfig.uiInputLength = spPhrase->uiLength;
@@ -359,7 +370,7 @@ static int iInPppt() {
 
         // parse with PPPT
         vApiPppt(vpApi, NULL, 0);
-        vpPpptParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vpPpptParser = vpApiOutputParser(vpApi);
         memset(&sConfig, 0, sizeof(sConfig));
         sConfig.acpInput = spPhrase->acpPhrase;
         sConfig.uiInputLength = spPhrase->uiLength;

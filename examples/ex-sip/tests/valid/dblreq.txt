@@ -1,0 +1,18 @@
+3.1.1.8.  Extra Trailing Octets in a UDP Datagram
+
+   This message contains a single SIP REGISTER request, which ostensibly
+   arrived over UDP in a single datagram.  The packet contains extra
+   octets after the body (which in this case has zero length).  The
+   extra octets happen to look like a SIP INVITE request, but (per
+   section 18.3 of [RFC3261]) they are just spurious noise that must be
+   ignored.
+
+   A SIP element receiving this datagram would handle the REGISTER
+   request normally and ignore the extra bits that look like an INVITE
+   request.  If the element is a proxy choosing to forward the REGISTER,
+   the INVITE octets would not appear in the forwarded request.
+
+      Message Details : dblreq
+      
+      LDT: 01/04/2021
+      Parses the message-body as expected.

@@ -1,0 +1,16 @@
+3.1.2.18.  Unknown Method with CSeq Method Mismatch
+
+   This message has an unknown method in the start line, and a CSeq
+   method tag that does not match.
+
+   Any element receiving this response should respond with a 501 Not
+   Implemented.  A 400 Bad Request is also acceptable, but choosing a
+   501 (particularly at proxies) has better future-proof
+   characteristics.
+
+      Message Details : mismatch02
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      Accepts extension-method.
+

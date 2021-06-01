@@ -1,0 +1,10 @@
+3.3.14.  REGISTER with a URL Escaped Header
+
+   This register request contains a contact where the URI has an escaped
+   header.
+
+   The register should succeed, and a subsequent retrieval of the
+   registration must include the escaped Route header in the contact URI
+   for this binding.
+
+      Message Details : regescrt

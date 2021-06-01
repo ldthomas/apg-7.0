@@ -1,0 +1,17 @@
+3.1.2.2.  Content Length Larger Than Message
+
+   This is a request message with a Content Length that is larger than
+   the actual length of the body.
+
+   When sent over UDP (as this message ostensibly was), the receiving
+   element should respond with a 400 Bad Request error.  If this message
+   arrived over a stream-based transport, such as TCP, there's not much
+   the receiving party could do but wait for more data on the stream and
+   close the connection if none is forthcoming within a reasonable
+   period of time.
+
+      Message Details : clerr
+      
+      LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+

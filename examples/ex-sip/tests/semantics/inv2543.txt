@@ -1,0 +1,16 @@
+3.4.1.  INVITE with RFC 2543 Syntax
+
+   This is a legal message per RFC 2543 (and several bis versions) that
+   should be accepted by RFC 3261 elements that want to maintain
+   backwards compatibility.
+
+   o  There is no branch parameter at all on the Via header field value.
+
+   o  There is no From tag.
+
+   o  There is no explicit Content-Length.  (The body is assumed to be
+      all octets in the datagram after the null-line.)
+
+   o  There is no Max-Forwards header field.
+
+      Message Details : inv2543

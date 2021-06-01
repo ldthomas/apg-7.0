@@ -1,0 +1,15 @@
+3.1.2.7.  <> Enclosing Request-URI
+
+   This INVITE request is invalid because the Request-URI has been
+   enclosed within in "<>".
+
+   It is reasonable always to reject a request with this error with a
+   400 Bad Request.  Elements attempting to be liberal with what they
+   accept may choose to ignore the brackets.  If the element forwards
+   the request, it must not include the brackets in the messages it
+   sends.
+
+      Message Details : ltgtruri
+      
+      NOTE: LDT: 01/04/2021
+      Fails as expected.

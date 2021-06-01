@@ -10,7 +10,8 @@
 !.gitignore
 !DoxyHeader.html
 !DoxyFooter.html
-**/tests
+**/builds
+**/build
 **/documentation
 **/Debug
 **/Release

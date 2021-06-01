@@ -1,0 +1,10 @@
+3.3.8.  Multiple Values in Single Value Required Fields
+
+   The message contains a request with multiple Call-ID, To, From, Max-
+   Forwards, and CSeq values.  An element receiving this request must
+   not break.
+
+   An element receiving this request would respond with a 400 Bad
+   Request error.
+
+      Message Details : multi01

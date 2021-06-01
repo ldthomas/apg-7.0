@@ -1,0 +1,28 @@
+3.1.1.5.  Use of % When It Is Not an Escape
+
+   In most of the places % can appear in a SIP message, it is not an
+   escape character.  This can surprise the unwary implementor.  The
+   following well-formed request has these properties:
+
+   o  The request method is unknown.  It is NOT equivalent to REGISTER.
+
+   o  The display name portion of the To and From header fields is
+      "%Z%45".  Note that this is not the same as %ZE.
+
+   o  This message has two Contact header field values, not three.
+      <sip:alias2@host2.example.com> is a C%6Fntact header field value.
+
+   A parser should accept this message as well formed.  A proxy would
+   forward or reject the message depending on what the Request-URI meant
+   to it.  An endpoint would reject this message with a 501.
+
+      Message Details : esc02
+      
+      LDT: 01/04/2021
+      The request method is accepted.
+      "%Z%45" is accepted as a quoted-string, display name in both the
+      To: and From: fields.
+      The two Contact headers are accepted as expected.
+      The C%6Fntact field is accepted as the nearly all-inclusive
+      extension-header.
+

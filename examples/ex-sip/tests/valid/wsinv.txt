@@ -1,0 +1,54 @@
+3.1.1.1.  A Short Tortuous INVITE
+
+   This short, relatively human-readable message contains:
+
+   o  line folding all over.
+
+   o  escaped characters within quotes.
+
+   o  an empty subject.
+
+   o  LWS between colons, semicolons, header field values, and other
+      fields.
+
+   o  both comma separated and separately listed header field values.
+
+   o  a mix of short and long form for the same header field name.
+
+   o  unknown Request-URI parameter.
+
+   o  unknown header fields.
+
+   o  an unknown header field with a value that would be syntactically
+      invalid if it were defined in terms of generic-param.
+
+   o  unusual header field ordering.
+
+   o  unusual header field name character case.
+
+   o  unknown parameters of a known header field.
+
+   o  a uri parameter with no value.
+
+   o  a header parameter with no value.
+
+   o  integer fields (Max-Forwards and CSeq) with leading zeros.
+
+   All elements should treat this as a well-formed request.
+
+   The UnknownHeaderWithUnusualValue header field deserves special
+   attention.  If this header field were defined in terms of comma-
+   separated values with semicolon-separated parameters (as would many
+   of the existing defined header fields), this would be invalid.
+   However, since the receiving element does not know the definition of
+   the syntax for this field, it must parse it as a header value.
+   Proxies would forward this header field unchanged.  Endpoints would
+   ignore the header field.
+
+      Message Details : wsinv
+      
+      LDT: 01/04/2021
+      Both the NewFangledHeader and the UnknownHeaderWithUnusualValue
+      parse as extension-header.
+      Parses as expected.
+

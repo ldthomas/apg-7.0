@@ -1,0 +1,13 @@
+3.1.1.9.  Semicolon-Separated Parameters in URI User Part
+
+   This request has a semicolon-separated parameter contained in the
+   "user" part of the Request-URI (whose value contains an escaped @
+   symbol).  Receiving elements will accept this as a well-formed
+   message.  The Request-URI will parse so that the user part is
+   "user;par=u@example.net".
+
+      Message Details : semiuri
+      
+      LDT: 01/04/2021
+      Parses as expected.
+

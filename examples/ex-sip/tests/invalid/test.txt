@@ -1,0 +1,10 @@
+   NOTE: LDT: 01/04/2021
+   Undocumented test.
+   The Request-Line is invalid.
+   The Request-URI is not followed by  "SP SIP-Version CRLF".
+
+      Message Details : test
+      
+      The parse fails immediately at the missing space, SP,
+      after the Request-URI.
+

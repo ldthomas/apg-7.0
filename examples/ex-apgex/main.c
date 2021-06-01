@@ -77,6 +77,15 @@ The compiled example will execute the following cases. Run the application with 
 */
 #include "../../apgex/apgex.h"
 
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
 static char* s_cpDescription =
         "Illustrate the construction and use of the apgex pattern-matching object.";
 
@@ -147,7 +156,9 @@ static int iPatterns() {
             "special         = %d33 / %d35 / %d36-39 / %d42-43 / %d45 / %d47\n"
             "                / %d61    / %d63 / %d94-96 / %d123-126\n";
     char* cpEmail = "just.me@my.email.domain.com";
-    char* cpGrammarFile = "../input/email.abnf";
+    char* cpGrammarName = "email.abnf";
+    char caGrammarBuf[PATH_MAX];
+    const char* cpGrammarFile;
     apgex_result sResult;
     apg_phrase* spPhrase;
     exception e;
@@ -157,6 +168,8 @@ static int iPatterns() {
         vpMem = vpMemCtor(&e);
         vpApgex = vpApgexCtor(&e);
         vpApi = vpApiCtor(&e);
+
+        cpGrammarFile = cpMakeFileName(caGrammarBuf, SOURCE_DIR, "/../input/", cpGrammarName);
 
         // display the information header
         char* cpHeader =
@@ -184,7 +197,7 @@ static int iPatterns() {
         // use the parser version with its intrinsic grammar
         printf("\nvApgexPatternParser: use a pre-constructed parser to define the pattern.\n");
         vApiFile(vpApi, cpGrammarFile, APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         vApgexPatternParser(vpApgex, vpParser, "");
         sResult = sApgexExec(vpApgex, spPhrase);
         vApgexDisplayResult(vpApgex, &sResult, NULL);
@@ -211,7 +224,9 @@ static int iResults() {
     static void* vpApi = NULL;
     char* cpEmail = "just.me@my.email.domain.com";
     char* cpEmail2 = "This email address is a fake just.me@my.email.domain.com so don't share it with anyone.";
-    char* cpGrammarFile = "../input/email.abnf";
+    char* cpGrammarName = "email.abnf";
+    char caGrammarBuf[PATH_MAX];
+    const char* cpGrammarFile;
     apgex_result sResult;
     apg_phrase* spPhrase;
     exception e;
@@ -221,6 +236,8 @@ static int iResults() {
         vpMem = vpMemCtor(&e);
         vpApgex = vpApgexCtor(&e);
         vpApi = vpApiCtor(&e);
+        
+        cpGrammarFile = cpMakeFileName(caGrammarBuf, SOURCE_DIR, "/../input/", cpGrammarName);
 
         // display the information header
         char* cpHeader =
@@ -282,7 +299,9 @@ static int iProperties() {
     static void* vpApi = NULL;
     char* cpEmailGood = "This, just.me@my.email.domain.com, is an email address.";
     char* cpEmailBad = "Not an email address.";
-    char* cpGrammarFile = "../input/email.abnf";
+    char* cpGrammarName = "email.abnf";
+    char caGrammarBuf[PATH_MAX];
+    const char* cpGrammarFile;
     apgex_result sResult;
     apgex_properties sProperties;
     apg_phrase* spPhrase;
@@ -293,6 +312,8 @@ static int iProperties() {
         vpMem = vpMemCtor(&e);
         vpApgex = vpApgexCtor(&e);
         vpApi = vpApiCtor(&e);
+
+        cpGrammarFile = cpMakeFileName(caGrammarBuf, SOURCE_DIR, "/../input/", cpGrammarName);
 
         // display the information header
         char* cpHeader =
@@ -456,7 +477,8 @@ static int iTraceMode() {
     static void* vpApgex = NULL;
     char* cpGrammar = "word = \"abc\" / \"xyz\"\n";
     char* cpStr = "---xyz---";
-    char* cpOutput = "../output/trace.html";
+    const char* cpOutput;
+    char caOutputBuf[PATH_MAX];
     apg_phrase* spPhrase;
     exception e;
     XCTOR(e);
@@ -464,6 +486,8 @@ static int iTraceMode() {
         // try block
         vpMem = vpMemCtor(&e);
         vpApgex = vpApgexCtor(&e);
+        
+        cpOutput = cpMakeFileName(caOutputBuf, SOURCE_DIR, "/../output/", "trace.html");
 
         // display the information header
         char* cpHeader =
@@ -1405,7 +1429,8 @@ static int iWide() {
             "word = 1*%x13A0-13F4\n";
     apg_phrase sPhrase;
     apg_phrase* spWord;
-    char* cpInput;
+    const char* cpInput;
+    char caInputBuf[PATH_MAX];
     const char* cpLine;
     uint8_t ucaBuf[1024];
     aint uiBufSize = 1024;
@@ -1431,9 +1456,9 @@ static int iWide() {
         }
 
         if(bIsBigEndian()){
-            cpInput = "../input/cherokee.utf32be";
+            cpInput = cpMakeFileName(caInputBuf, SOURCE_DIR, "/../input/", "cherokee.utf32be");
         }else{
-            cpInput = "../input/cherokee.utf32le";
+            cpInput = cpMakeFileName(caInputBuf, SOURCE_DIR, "/../input/", "cherokee.utf32le");
         }
         uiSize = uiBufSize;
         vUtilFileRead(vpMem, cpInput, ucaBuf, &uiSize);

@@ -1,0 +1,20 @@
+3.1.2.15.  Non-token Characters in Display Name
+
+   This OPTIONS request is malformed, since the display names in the To
+   and From header fields contain non-token characters but are unquoted.
+
+   It is reasonable always to reject this kind of error with a 400 Bad
+   Request response.
+
+   An element may attempt to be liberal in what it receives and infer
+   the missing quotes.  If this element were a proxy, it must not
+   propagate the error into the request it forwards.  As a consequence,
+   if the fields are covered by a signature, there's not much point in
+   trying to be liberal - the message should simply be rejected.
+
+      Message Details : baddn
+      
+      NOTE: LDT: 06/20/2019
+      TO and From fail as expected on the non-token comma.
+      However, the extension-header picks them up OK.
+      This message fails because it is missing the final CRLF at the end.

@@ -115,6 +115,16 @@ The compiled example will execute the following cases. Run the application with 
 #include "../../utilities/utilities.h"
 #include "../../api/api.h"
 
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+static char caBuf[PATH_MAX];
+
 static char* s_cpDescription =
         "Illustrate parser tracing and parser, memory and vector statistics.";
 
@@ -180,8 +190,8 @@ static int iTraceDefault() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a floating point parser without PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // display the trace without PPPT
         printf("\nTrace without PPPT\n");
@@ -197,8 +207,8 @@ static int iTraceDefault() {
         vUtilPrintParserState(&sState);
 
         // construct a floating point parser with PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_TRUE);
-        vpParserPppt = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_TRUE);
+        vpParserPppt = vpApiOutputParser(vpApi);
 
         // display the trace with PPPT
         printf("\nTrace with PPPT\n");
@@ -242,8 +252,8 @@ static int iTraceConfigGen() {
         vpApi = vpApiCtor(&e);
 
         // construct a floating point parser without PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // display the trace without PPPT
         printf("\nDisplay the Trace Configuration File to stdout\n");
@@ -283,11 +293,11 @@ static int iTraceConfigRange() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a floating point parser without PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // display the trace without PPPT
-        char* cpConfig = "../input/float-config-range";
+        const char* cpConfig = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float-config-range");
         printf("\nUsing trace configuration file %s \n", cpConfig);
         vpTrace = vpTraceCtor(vpParser);
         vTraceConfig(vpTrace, cpConfig);
@@ -338,11 +348,11 @@ static int iTraceConfigRules() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a floating point parser without PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // display the trace without PPPT
-        char* cpConfig = "../input/float-config-rules";
+        const char* cpConfig = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float-config-rules");
         printf("\nUsing trace configuration file %s \n", cpConfig);
         vpTrace = vpTraceCtor(vpParser);
         vTraceConfig(vpTrace, cpConfig);
@@ -393,11 +403,11 @@ static int iTraceConfigSelect() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a floating point parser without PPPT
-        vApiFile(vpApi, "../input/float.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
 
         // display the trace without PPPT
-        char* cpConfig = "../input/float-config-select";
+        const char* cpConfig = cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","float-config-select");
         printf("\nUsing trace configuration file %s \n", cpConfig);
         vpTrace = vpTraceCtor(vpParser);
         vTraceConfig(vpTrace, cpConfig);
@@ -461,8 +471,8 @@ static int iStatsHits() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a JSON parser without PPPT
-        vApiFile(vpApi, "../input/json.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","json.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         vpStats = vpStatsCtor(vpParser);
 
         // parse without PPPT
@@ -538,13 +548,13 @@ static int iStatsPppt() {
         spPhrase = spUtilStrToPhrase(vpMem, cpInput);
 
         // construct a JSON parser without PPPT
-        vApiFile(vpApi, "../input/json.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","json.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         vpStats = vpStatsCtor(vpParser);
 
         // construct a JSON parser with PPPT
-        vApiFile(vpApi, "../input/json.abnf", APG_FALSE, APG_TRUE);
-        vpParserPppt = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","json.abnf"), APG_FALSE, APG_TRUE);
+        vpParserPppt = vpApiOutputParser(vpApi);
         vpStatsPppt = vpStatsCtor(vpParserPppt);
 
         // parse without PPPT
@@ -626,8 +636,8 @@ static int iStatsCumulative() {
         vpMem = vpMemCtor(&e);
 
         // construct a JSON parser without PPPT
-        vApiFile(vpApi, "../input/json.abnf", APG_FALSE, APG_FALSE);
-        vpParser = vpApiOutputParser(vpApi, APG_FALSE);
+        vApiFile(vpApi, cpMakeFileName(caBuf, SOURCE_DIR, "/../input/","json.abnf"), APG_FALSE, APG_FALSE);
+        vpParser = vpApiOutputParser(vpApi);
         vpStats = vpStatsCtor(vpParser);
 
         // parse input 1

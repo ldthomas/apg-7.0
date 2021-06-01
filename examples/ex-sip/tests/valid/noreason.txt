@@ -1,0 +1,12 @@
+
+3.1.1.13.  Empty Reason Phrase
+
+   This well-formed response contains no reason phrase.  A parser must
+   accept this message.  The space character after the reason code is
+   required.  If it were not present, this message could be rejected as
+   invalid (a liberal receiver would accept it anyway).
+
+      Message Details : noreason
+      
+      LDT: 01/04/2021
+      The Reason-Phrase parses as empty as allowed and expected.

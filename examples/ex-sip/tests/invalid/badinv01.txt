@@ -1,0 +1,21 @@
+3.1.2.1.  Extraneous Header Field Separators
+
+   The Via header field of this request contains additional semicolons
+   and commas without parameters or values.  The Contact header field
+   contains additional semicolons without parameters.  This message is
+   syntactically invalid.
+
+   An element receiving this request should respond with a 400 Bad
+   Request error.
+
+      Message Details : badinv01
+      
+      NOTE: LDT: 01/04/2021
+      It is interesting how the Via fails. The Via itself is accepted as
+      Via: SIP/2.0/UDP 192.0.2.15
+      The failure is finding ";" instead of CRLF after that.
+      
+      The parser never actually gets to the Contact header. The entire
+      message fails so badly from the ";;,;,," following Via that it
+      gives up the fight.
+

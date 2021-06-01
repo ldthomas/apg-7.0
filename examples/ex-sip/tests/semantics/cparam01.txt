@@ -1,0 +1,14 @@
+3.3.12.  REGISTER with a Contact Header Parameter
+
+   This register request contains a contact where the 'unknownparam'
+   parameter must be interpreted as a contact-param and not a url-param.
+
+   This REGISTER should succeed.  The response must not include
+   "unknownparam" as a url-parameter for this binding.  Likewise,
+   "unknownparam" must not appear as a url-parameter in any binding
+   during subsequent fetches.
+
+   Behavior is the same, of course, for any known contact-param
+   parameter names.
+
+      Message Details : cparam01

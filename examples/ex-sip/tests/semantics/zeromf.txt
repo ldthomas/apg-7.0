@@ -1,0 +1,10 @@
+3.3.11.  Max-Forwards of Zero
+
+   This is a legal SIP request with the Max-Forwards header field value
+   set to zero.
+
+   A proxy should not forward the request and should respond 483 (Too
+   Many Hops).  An endpoint should process the request as if the Max-
+   Forwards field value were still positive.
+
+      Message Details : zeromf

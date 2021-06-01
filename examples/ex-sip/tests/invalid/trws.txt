@@ -1,0 +1,16 @@
+3.1.2.10.  SP Characters at End of Request-Line
+
+   This OPTIONS request contains SP characters between the SIP-Version
+   field and the CRLF terminating the Request-Line.
+
+   It is acceptable to reject this request as malformed.  An element
+   that is liberal in what it accepts may ignore these extra SP
+   characters when processing the request.  If the element forwards the
+   request, it must not include these extra SP characters in the
+   messages it sends.
+
+      Message Details : trws
+      
+      NOTE: LDT: 01/04/2021
+      Fails as expected. Fails immediately at the SP following the
+      SIP-Version.

@@ -1,0 +1,21 @@
+3.1.2.16.  Unknown Protocol Version
+
+   To an element implementing [RFC3261], this request is malformed due
+   to its high version number.
+
+   The element should respond to the request with a 505 Version Not
+   Supported error.
+
+      Message Details : badvers
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      From RFC 3261
+           "To be compliant with this specification,
+           applications sending SIP messages MUST include a SIP-Version
+           of "SIP/2.0".  The SIP-Version string is case-insensitive,
+           but implementations MUST send upper-case."
+
+      SIP-Version       =  "SIP" "/" 1*DIGIT "." 1*DIGIT
+      Constraints on the version number would have to be semantically enforced.
+

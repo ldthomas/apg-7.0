@@ -82,7 +82,19 @@ The compiled example will execute the following cases. Run the application with 
  - case 3: Display a mix of ASCII and non-ASCII bytes in all formats.
  - case 4: Display Unicode data in the Unicode format.
 */
+#include <limits.h>
 #include "../../utilities/utilities.h"
+
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
+static char s_caBuf[PATH_MAX];
 
 static char* s_cpDescription =
         "Illustrate the construction and use of the data formatting utility object.";
@@ -128,7 +140,7 @@ static int iLimits() {
     aint uiBufSize = 1024;
     uint8_t ucaData[1024];
     aint uiDataLen;
-    char* cpDataFile = "../input/display-data";
+    const char* cpDataFile = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "display-data");
     const char* cpLine;
     exception e;
     XCTOR(e);
@@ -194,7 +206,7 @@ static int iAscii() {
     aint uiBufSize = 1024;
     uint8_t ucaData[1024];
     aint uiDataLen;
-    char* cpDataFile = "../input/display-data";
+    const char* cpDataFile = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "display-data");
     const char* cpLine;
     exception e;
     XCTOR(e);
@@ -279,8 +291,6 @@ static int iUnicode() {
     aint uiDataLen;
     uint32_t* uip32;
     aint uiLen32;
-    char* cpBEFile = "../input/unicode-data-be";
-    char* cpLEFile = "../input/unicode-data-le";
     const char* cpLine;
     exception e;
     XCTOR(e);
@@ -309,9 +319,9 @@ static int iUnicode() {
         // get the file
         uiDataLen = uiBufSize;
         if(bIsBigEndian()){
-            vUtilFileRead(vpMem, cpBEFile, ucaData, &uiDataLen);
+            vUtilFileRead(vpMem, cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "unicode-data-be"), ucaData, &uiDataLen);
         }else{
-            vUtilFileRead(vpMem, cpLEFile, ucaData, &uiDataLen);
+            vUtilFileRead(vpMem, cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "unicode-data-le"), ucaData, &uiDataLen);
         }
         if(uiDataLen > uiBufSize){
             XTHROW(&e, "data buffer too small for file");

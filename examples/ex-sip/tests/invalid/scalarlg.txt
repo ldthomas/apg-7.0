@@ -1,0 +1,22 @@
+3.1.2.5.  Response Scalar Fields with Overlarge Values
+
+   This response contains several scalar header field values outside
+   their legal range.
+
+   o  The CSeq sequence number is >2**32-1.
+
+   o  The Retry-After field is unreasonably large (note that RFC 3261
+      does not define a legal range for this field).
+
+   o  The Warning field has a warning-value with more than 3 digits.
+
+   An element receiving this response will simply discard it.
+
+      Message Details : scalarlg
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      The Warning header does indeed fail. 
+      But then the liberal extension-header accepts it.
+      This would require some error productions to catch this syntactically.
+

@@ -1,0 +1,15 @@
+3.1.2.9.  Multiple SP Separating Request-Line Elements
+
+   This INVITE has illegal multiple SP characters between elements of
+   the start line.
+
+   It is acceptable to reject this request as malformed.  An element
+   that is liberal in what it accepts may ignore these extra SP
+   characters when processing the request.  If the element forwards the
+   request, it must not include these extra SP characters in the
+   messages it sends.
+
+      Message Details : lwsstart
+      
+      NOTE: LDT: 01/04/2021
+      Fails as expected. Fails immediately at the second SP after the Method.

@@ -1,0 +1,12 @@
+3.1.2.17.  Start Line and CSeq Method Mismatch
+
+   This request has mismatching values for the method in the start line
+   and the CSeq header field.  Any element receiving this request will
+   respond with a 400 Bad Request.
+
+      Message Details : mismatch01
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      This is a semantic restriction.
+

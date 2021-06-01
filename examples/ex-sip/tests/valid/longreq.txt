@@ -1,0 +1,18 @@
+3.1.1.7.  Long Values in Header Fields
+
+   This well-formed request contains header fields with many values and
+   values that are very long.  Features include the following:
+
+   o  The To header field has a long display name, and long uri
+      parameter names and values.
+
+   o  The From header field has long header parameter names and values,
+      in particular, a very long tag.
+
+   o  The Call-ID is one long token.
+
+      Message Details : longreq
+      
+      LDT: 01/04/2021
+      Parses as expected.
+

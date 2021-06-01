@@ -1,0 +1,29 @@
+3.1.2.4.  Request Scalar Fields with Overlarge Values
+
+   This request contains several scalar header field values outside
+   their legal range.
+
+      o  The CSeq sequence number is >2**32-1.
+
+      o  The Max-Forwards value is >255.
+
+      o  The Expires value is >2**32-1.
+
+      o  The Contact expires parameter value is >2**32-1.
+
+   An element receiving this request should respond with a 400 Bad
+   Request due to the CSeq error.  If only the Max-Forwards field were
+   in error, the element could choose to process the request as if the
+   field were absent.  If only the expiry values were in error, the
+   element could treat them as if they contained the default values for
+   expiration (3600 in this case).
+
+   Other scalar request fields that may contain aberrant values include,
+   but are not limited to, the Contact q value, the Timestamp value, and
+   the Via ttl parameter.
+
+      Message Details : scalar02
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      These are semantic restrictions.

@@ -209,6 +209,18 @@ The compiled example will execute the following cases. Run the application with 
 #include "./sip-1.h"
 #include "./udtlib.h"
 
+#include "source.h"
+
+static char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
+ static char s_caBuf[2*PATH_MAX];
+ static char s_caBufTests[4*PATH_MAX];
+
 static char* s_cpDescription =
         "Illustrate parsing and time tests for SIP messages.";
 
@@ -233,6 +245,9 @@ static int iHelp(void){
     printf("             arg = anthing else\n");
     printf("                   print this help screen\n");
     printf("\n");
+    printf("       NOTE: Case 2 must be run before any of the other cases.\n");
+    printf("             It constructs a JSON file of tests that is used by all other cases.\n");
+    printf("\n");
     for(; i < s_iCaseCount; i++){
         printf("case %ld %s\n", (i + 1), s_cppCases[i]);
     }
@@ -250,26 +265,26 @@ static int iApp() {
 }
 
 typedef struct {
-    char* cpSipJsonObject;
     char* cpValidKey;
     char* cpInvalidKey;
     char* cpSemanticsKey;
     char* cpValidIn;
     char* cpInvalidIn;
     char* cpSemanticsIn;
-    char* cpStatsOut;
+    char* cpSipJsonObject;
+//    char* cpStatsOut;
 } test_context;
 static test_context s_sTestsCtx = {
-        "./sip-tests.json",
         "valid",
         "invalid",
         "semantics",
         "tests/valid/",
         "tests/invalid/",
-        "tests/semantics/"
+        "tests/semantics/",
+        "sip-tests.json",
 };
 typedef struct {
-    char* cpOutObject;
+    const char* cpOutObject;
     void* vpMem;
     exception* spException;
     void* vpVecNames;
@@ -282,7 +297,8 @@ typedef struct {
 
 static json_context sSetup(exception* spE, void* vpMem){
     json_context sCtx = {};
-    sCtx.cpOutObject = "../output/sip-tests.json";
+    static char caBuf[PATH_MAX];
+    sCtx.cpOutObject = cpMakeFileName(caBuf, SOURCE_DIR, "/../output/", "sip-tests.json");
     sCtx.vpMem = vpMem;
     sCtx.spException = spE;
     sCtx.vpVecNames = vpVecCtor(sCtx.vpMem, sizeof(char), 10000);
@@ -435,6 +451,12 @@ static int iBuilder() {
                 "This function will read the text and data SIP torture test files and\n"
                 "wrap them all into a single JSON file for later use by other example cases.\n";
         printf("\n%s", cpHeader);
+
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
 
         sCtx = sSetup(&e, vpMem);
         aint uiRoot, uiKey;
@@ -599,7 +621,7 @@ static void vGetMsgs(void* vpMem, section_def* spSection, abool bDisplay){
     }
     vJsonDtor(vpJson);
 }
-static void vParseTheMsgs(exception* spEx, section_def* spSection, char* cpPrefix){
+static void vParseTheMsgs(exception* spEx, section_def* spSection, const char* cpPrefix){
     parser_config sConfig = {};
     parser_state sState;
     achar* acpMsgs;
@@ -607,13 +629,16 @@ static void vParseTheMsgs(exception* spEx, section_def* spSection, char* cpPrefi
     msg_offset* spOffsetBeg, *spOffset;
     char caTraceName[1024];
     char* cpTestName;
-    char* cpTraceConfig = "./trace-config.txt";
+    char* cpTraceConfig = "trace-config.txt";
     aint ui;
     void* vpParser = NULL;
     void* vpTrace;
     acpMsgs = (achar*)vpVecFirst(spSection->vpVecMsgs);
     cpNameBeg = (char*)vpVecFirst(spSection->vpVecNames);
     spOffsetBeg = (msg_offset*)vpVecFirst(spSection->vpVecOffsets);
+
+    // convert trace config to absolute path
+    cpTraceConfig = cpMakeFileName(s_caBuf, SOURCE_DIR, "/", cpTraceConfig);
 
     // parse the messages
     printf("\nParse the Messages without UDTs\n");
@@ -670,7 +695,7 @@ static int iValid() {
     static void* vpMem = NULL;
     static void* vpJson = NULL;
     section_def sSection = {};
-    char* cpOutPrefix;
+    const char* cpOutPrefix;
     exception e;
     XCTOR(e);
     if(e.try){
@@ -687,14 +712,20 @@ static int iValid() {
                 "To test with PPPTs, leave APG_NO_PPPT undefined.\n";
         printf("\n%s", cpHeader);
 
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
+
         sSection.cpJsonFileName = s_sTestsCtx.cpSipJsonObject;
         sSection.cpSectionName = s_sTestsCtx.cpValidKey;
         vGetMsgs(vpMem, &sSection, APG_TRUE);
 
 #ifdef APG_NO_PPPT
-        cpOutPrefix = "../output/valid-trace";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "valid-trace");
 #else
-        cpOutPrefix = "../output/valid-trace-pppt";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "valid-trace-pppt");
 #endif
         vParseTheMsgs(&e, &sSection, cpOutPrefix);
 
@@ -715,7 +746,7 @@ static int iInvalid() {
     static void* vpMem = NULL;
     static void* vpJson = NULL;
     section_def sSection = {};
-    char* cpOutPrefix;
+    const char* cpOutPrefix;
     exception e;
     XCTOR(e);
     if(e.try){
@@ -732,14 +763,20 @@ static int iInvalid() {
                 "To test with PPPTs, leave APG_NO_PPPT undefined.\n";
         printf("\n%s", cpHeader);
 
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
+
         sSection.cpJsonFileName = s_sTestsCtx.cpSipJsonObject;
         sSection.cpSectionName = s_sTestsCtx.cpInvalidKey;
         vGetMsgs(vpMem, &sSection, APG_TRUE);
 
 #ifdef APG_NO_PPPT
-        cpOutPrefix = "../output/invalid-trace";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "invalid-trace");
 #else
-        cpOutPrefix = "../output/invalid-trace-pppt";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "invalid-trace-pppt");
 #endif
         vParseTheMsgs(&e, &sSection, cpOutPrefix);
 
@@ -760,7 +797,7 @@ static int iSemantics() {
     static void* vpMem = NULL;
     static void* vpJson = NULL;
     section_def sSection = {};
-    char* cpOutPrefix;
+    const char* cpOutPrefix;
     exception e;
     XCTOR(e);
     if(e.try){
@@ -779,13 +816,19 @@ static int iSemantics() {
                 "Since the errors are in the semantics no attempt at critiquing them is done.\n";
         printf("\n%s", cpHeader);
 
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
+
         sSection.cpJsonFileName = s_sTestsCtx.cpSipJsonObject;
         sSection.cpSectionName = s_sTestsCtx.cpSemanticsKey;
         vGetMsgs(vpMem, &sSection, APG_TRUE);
 #ifdef APG_NO_PPPT
-        cpOutPrefix = "../output/semantics-trace";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "semantic-trace");
 #else
-        cpOutPrefix = "../output/semantics-trace-pppt";
+        cpOutPrefix = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "semantic-trace-pppt");
 #endif
 
         vParseTheMsgs(&e, &sSection, cpOutPrefix);
@@ -816,7 +859,7 @@ static int iTime() {
     static void* vpParser = NULL;
     static FILE* spFp = NULL;
     static FILE* spFpUdt = NULL;
-    char* cpOut, *cpOutUdt;
+    const char* cpOut, *cpOutUdt;
     section_def sSection[3];
     char caBuf[1024];
     aint ui, uj, uiTests;
@@ -840,12 +883,18 @@ static int iTime() {
                 "To test with PPPTs, leave APG_NO_PPPT undefined.\n";
         printf("\n%s", cpHeader);
 
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
+
 #ifdef APG_NO_PPPT
-        cpOut = "../output/time.out";
-        cpOutUdt = "../output/time-udt.out";
+        cpOut = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "time.out");
+        cpOutUdt = cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../output/", "time-udt.out");
 #else
-        cpOut = "../output/time-pppt.out";
-        cpOutUdt = "../output/time-pppt-udt.out";
+        cpOut = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "time-pppt.out");
+        cpOutUdt = cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../output/", "time-pppt-udt.out");
 #endif
         spFp = fopen(cpOut, "wb");
         if(!spFp){
@@ -962,7 +1011,7 @@ static int iStats() {
     static void* vpVecConfig = NULL;
     static void* vpJson = NULL;
     static void* vpParser = NULL;
-    char* cpOut, *cpOutUdt;
+    const char* cpOut, *cpOutUdt;
     section_def sSection[3];
     aint ui, uj;
     parser_config* spConfig, *spStart, *spEnd;
@@ -980,6 +1029,12 @@ static int iStats() {
                 "Comparisons will show the differences between parsing with and without PPPTs,\n"
                 " and with and without UDTs.\n";
         printf("\n%s", cpHeader);
+
+        // convert the relative path names for the tests to absolute path names
+        s_sTestsCtx.cpValidIn = cpMakeFileName(s_caBufTests, SOURCE_DIR, "/", s_sTestsCtx.cpValidIn);
+        s_sTestsCtx.cpInvalidIn = cpMakeFileName(&s_caBufTests[PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpInvalidIn);
+        s_sTestsCtx.cpSemanticsIn = cpMakeFileName(&s_caBufTests[2*PATH_MAX], SOURCE_DIR, "/", s_sTestsCtx.cpSemanticsIn);
+        s_sTestsCtx.cpSipJsonObject = cpMakeFileName(&s_caBufTests[3*PATH_MAX], SOURCE_DIR, "/../output/", s_sTestsCtx.cpSipJsonObject);
 
         sSection[0].cpJsonFileName = s_sTestsCtx.cpSipJsonObject;
         sSection[0].cpSectionName = s_sTestsCtx.cpValidKey;
@@ -1006,11 +1061,11 @@ static int iStats() {
         }
 
 #ifdef APG_NO_PPPT
-        cpOut = "../output/stats.out";
-        cpOutUdt = "../output/stats-udt.out";
+        cpOut = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "stats.out");
+        cpOutUdt = cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../output/", "stats-udt.out");
 #else
-        cpOut = "../output/stats-pppt.out";
-        cpOutUdt = "../output/stats-pppt-udt.out";
+        cpOut = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../output/", "stats-pppt.out");
+        cpOutUdt = cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../output/", "stats-pppt-udt.out");
 #endif
         aint uiMsgs = uiVecLen(vpVecConfig);
         spStart = (parser_config*)vpVecFirst(vpVecConfig);

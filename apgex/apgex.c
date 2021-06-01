@@ -1591,11 +1591,11 @@ static void vConstructParser(apgex* spExp){
     vApiInValidate(spExp->vpApi, APG_FALSE);
     vApiSyntax(spExp->vpApi, APG_FALSE);
     vApiOpcodes(spExp->vpApi);
-    spApiAttrs(spExp->vpApi, NULL);
+    bApiAttrs(spExp->vpApi);
     if(spExp->bPpptMode){
         vApiPppt(spExp->vpApi, NULL, 0);
     }
-    spExp->vpParser = vpApiOutputParser(spExp->vpApi, APG_FALSE);
+    spExp->vpParser = vpApiOutputParser(spExp->vpApi);
     TRACE_APGEX_OUTPUT(spExp);
     spExp->vpAst = vpAstCtor(spExp->vpParser);
 }

@@ -1,4 +1,4 @@
-﻿# APG Version 7.0
+﻿﻿# APG Version 7.0
 
 [Overview](#overview)<br>
 [Documentation](#doc)<br>
@@ -31,12 +31,12 @@ Previous versions of APG have been developed to generate parsers in [C/C++](http
 
 ##  <a id='doc'></a> Documentation 
 The documentation is included in the code as doxygen comments. To generate the documentation, install [Graphviz](https://graphviz.org/) and [doxygen](https://www.doxygen.nl/index.html). With the Linux distribution Ubuntu 20.04 this is as simple as:
-> sudo apt update<br>
-> sudo apt install graphviz<br>
-> sudo apt install doxygen
+> $sudo apt update<br>
+> $sudo apt install graphviz<br>
+> $sudo apt install doxygen
 
 With other Linux distros the procedure is nearly the same. With Graphviz and doxygen installed, from the repository directory simply execute doxygen.
-> doxygen
+> $doxygen
 
 The documentation home page can then be found at
 > ./documentation/index.html
@@ -73,13 +73,39 @@ The library directories contain source code that is shared with many of the appl
  - `./utilities` - a tool chest of utilities for data conversion, formatting, pretty printing, etc.
  - `./xml` - the XML parser
 
+_Note that these libraries are not built once and for all and linked as static or dynamic libraries. The reason is that for each application, in general, the libraries are built with a different set of compiler defines. Therefore, for each application and example the necessary libraries with the required compiler defines are built from source._
+
 ##  <a id='install'></a> Installation 
-No make files are included in the repository. While, for a single application, it is convenient to simply type `./configure` + `make`,
-that approach presents a couple of problems. First, there are many applications included here, not just a single one. Second, that doesn't give access to the application code as it is being run. With the examples especially, following along and experimenting with the code is the whole purpose for including them. Therefore, it has been left to the user to build the applications in the IDE of his or her choice.
+APG Version 7.0 has been developed on a the Linux Ubuntu 20.04 operating system using the [Eclipse for C/C++](https://www.eclipse.org/downloads/packages/) IDE version 4.16. `CMakeLists.txt` files exist in the `apg` application directory as well as in each of the examples application directories. The script `build-release.sh` will use `cmake` to build any or all of the applications. Run 
+>$./build-release.sh --help
 
-The step-by-step procedure for building the parser generator command-line application, `apg`,  using [Eclipse for C/C++](https://www.eclipse.org/downloads/packages/) is given [here](Installation.md). It is assumed that any modern IDE will have comparable means for defining the macros and including the source code from select library directories as the application project requires.
+ for exact usage.
 
-For all of the remaining example applications, the process is the same. The required macros and libraries for each project can be found in the documentation for each respective example in   "Appendix B. Examples".
+This is handy to build the release version of the parser generator and you may want to copy it to a path directory for ease of use. e.g.
+>$sudo cp Release/apg/apg70 /usr/local/bin<br>
+>$apg70 --version
+
+However, running the release versions of the examples is not very instructive. To study the examples and experiment with them they are best run in an IDE with a good code editor and debugger. `build-debug.sh` exists for this purpose. Run 
+>build-debug.sh --help
+
+for exact usage. `build-debug.sh` will generate Eclipse project files. Simply run
+>$./build-debug.sh all
+
+Open Eclipse. The workspace directory is not important, but a good practice might be to switch the workspace to the apg-7.0 repository directory. Once Eclipse is open, navigate to 
+>Project->import->General->Existing Projects into Workspace
+
+and in the `Select root directory` window navigate to (full path)
+>./apg-7.0/Debug
+
+All of the projects should appear already selected. Simply click `Finish` and the apg project and all of the example projects will be imported. At this point it should be possible to build, edit, run and debug any of the projects in the normal Eclipse manner.
+
+For other Linux distros I would imagine the process to be similar as long as `cmake` version 3.20+ and Eclipse 4.16+ are installed. 
+
+Unfortunately, although `cmake` theoretically works across many platforms, I have not been able to get it to work on Windows. 
+
+Although considerably more tedious, Eclipse projects can also be created manually without the help of `cmake` and this is described in detail for the `apg` application in the [installation](installation.md) document. I have been successful in getting apg-7.0 running in Eclipse on Windows with this manual procedure.
+
+I want to thank [hhaoao](https://github.com/hhaoao) for suggesting the advantages of `cmake` His `CMakeLists.txt` file in issue #2 was the model I used for all of the projects here.
 
 ##  <a id='license'></a> License 
 APG Version 7.0 is licensed under the permissive,  Open Source Initiative-approved [2-clause BSD license](LICENSE.md). 

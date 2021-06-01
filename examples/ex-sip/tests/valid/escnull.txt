@@ -1,0 +1,13 @@
+3.1.1.4.  Escaped Nulls in URIs
+
+   This register request contains several URIs with nulls in the
+   userpart.  The message is well formed - parsers must accept this
+   message.  Implementations must take special care when unescaping the
+   Address-of-Record (AOR) in this request so as to not prematurely
+   shorten the username.  This request registers two distinct contact
+   URIs.
+
+      Message Details : escnull
+      
+      LDT: 01/04/2021
+      Parses as expected. All nulls parsed as escaped.

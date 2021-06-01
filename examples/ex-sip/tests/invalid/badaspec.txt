@@ -1,0 +1,20 @@
+3.1.2.14.  Spaces within addr-spec
+
+   This request is malformed, since the addr-spec in the To header field
+   contains spaces.  Parsers receiving this request must not break.  It
+   is reasonable to reject this request with a 400 Bad Request response.
+   Elements attempting to be liberal may ignore the spaces.
+
+      Message Details : badaspec
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds.
+      
+      The "To" header does indeed fail, but the message-header:
+      /  header-name                HCOLON extension-header) CRLF
+      does succeed.
+      
+      The extension-header allows almost anything and will usually succeed,
+      even if the "To" header fails. The application would have to handle
+      this in semantics.
+

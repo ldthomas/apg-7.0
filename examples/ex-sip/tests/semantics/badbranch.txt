@@ -1,0 +1,12 @@
+3.2.1.  Missing Transaction Identifier
+
+   This request indicates support for RFC 3261-style transaction
+   identifiers by providing the z9hG4bK prefix to the branch parameter,
+   but it provides no identifier.  A parser must not break when
+   receiving this message.  An element receiving this request could
+   reject the request with a 400 Response (preferably statelessly, as
+   other requests from the source are likely also to have a malformed
+   branch parameter), or it could fall back to the RFC 2543-style
+   transaction identifier.
+
+      Message Details : badbranch

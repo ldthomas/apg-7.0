@@ -1,0 +1,25 @@
+3.1.2.3.  Negative Content-Length
+
+   This request has a negative value for Content-Length.
+
+   An element receiving this message should respond with an error.  This
+   request appeared over UDP, so the remainder of the datagram can
+   simply be discarded.  If a request like this arrives over TCP, the
+   framing error is not recoverable, and the connection should be
+   closed.  The same behavior is appropriate for messages that arrive
+   without a numeric value in the Content-Length header field, such as
+   the following:
+
+      Content-Length: five
+
+   Implementors should take extra precautions if the technique they
+   choose for converting this ascii field into an integral form can
+   return a negative value.  In particular, the result must not be used
+   as a counter or array index.
+
+      Message Details : ncl
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      Content-Length does indeed fail. But the liberal extension-header
+      picks it up OK.

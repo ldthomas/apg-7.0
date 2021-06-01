@@ -1,0 +1,14 @@
+3.1.1.6.  Message with No LWS between Display Name and <
+
+   This OPTIONS request is not valid per the grammar in RFC 3261 since
+   there is no LWS between the token in the display name and < in the
+   From header field value.  This has been identified as a specification
+   bug that will be removed when RFC 3261 is revised.  Elements should
+   accept this request as well formed.
+
+      Message Details : lwsdisp
+      
+      LDT: 01/04/2021
+      Accepts display name "caller" as d-name and the following LAQUOT
+      as expected.
+

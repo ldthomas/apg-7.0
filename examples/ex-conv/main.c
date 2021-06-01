@@ -72,7 +72,19 @@ The compiled example will execute the following cases. Run the application with 
  - case 4: Encode raw, 32-bit data.
  - case 5: Add base64 encoding and decoding.
 */
+#include <limits.h>
 #include "../../utilities/utilities.h"
+
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
+static char s_caBuf[5*PATH_MAX];
 
 static char* s_cpDescription =
         "Illustrate the construction and use of the data conversion utility object.";
@@ -113,7 +125,7 @@ static int iApp() {
 }
 
 typedef struct{
-    char* cpName;
+    const char* cpName;
     uint8_t* ucpData;
     aint uiBytes;
     aint uiFormat;
@@ -125,11 +137,10 @@ static int iConv() {
     char caBuf[1024];
     aint uiFileSize = 1024;
     conv_file saFiles[] = {
-            { "../input/data8", NULL, 0, UTF_8},
-            { "../input/data16le", NULL, 0, UTF_16LE},
-            { "../input/data16be", NULL, 0, UTF_16BE},
-            { "../input/data32le", NULL, 0, UTF_32LE},
-            { "../input/data32be", NULL, 0, UTF_32BE},
+            { cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "data8"), NULL, 0, UTF_8},
+            { cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../input/", "data16le"), NULL, 0, UTF_16LE},
+            { cpMakeFileName(&s_caBuf[2*PATH_MAX], SOURCE_DIR, "/../input/", "data16be"), NULL, 0, UTF_16BE},
+            { cpMakeFileName(&s_caBuf[3*PATH_MAX], SOURCE_DIR, "/../input/", "data32le"), NULL, 0, UTF_32LE},
     };
     conv_file* spFileIn, *spFileOut;
     aint uiFileCount = (aint)(sizeof(saFiles) / sizeof(saFiles[0]));
@@ -243,11 +254,10 @@ static int iGet() {
     uint32_t uiLength;
     uint32_t* uipCodePoints = &uiaGetCodePoints[0];
     conv_file saFiles[] = {
-            { "../input/data8", NULL, 0, UTF_8},
-            { "../input/data16le", NULL, 0, UTF_16LE},
-            { "../input/data16be", NULL, 0, UTF_16BE},
-            { "../input/data32le", NULL, 0, UTF_32LE},
-            { "../input/data32be", NULL, 0, UTF_32BE},
+            { cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "data8"), NULL, 0, UTF_8},
+            { cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../input/", "data16le"), NULL, 0, UTF_16LE},
+            { cpMakeFileName(&s_caBuf[2*PATH_MAX], SOURCE_DIR, "/../input/", "data16be"), NULL, 0, UTF_16BE},
+            { cpMakeFileName(&s_caBuf[3*PATH_MAX], SOURCE_DIR, "/../input/", "data32le"), NULL, 0, UTF_32LE},
     };
     conv_file* spFileIn;
     aint uiFileCount = (aint)(sizeof(saFiles) / sizeof(saFiles[0]));
@@ -341,11 +351,10 @@ static int iUse() {
     char caBuf[1024];
     aint uiFileSize = 1024;
     conv_file saFiles[] = {
-            { "../input/data8", NULL, 0, UTF_8},
-            { "../input/data16le", NULL, 0, UTF_16LE},
-            { "../input/data16be", NULL, 0, UTF_16BE},
-            { "../input/data32le", NULL, 0, UTF_32LE},
-            { "../input/data32be", NULL, 0, UTF_32BE},
+            { cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "data8"), NULL, 0, UTF_8},
+            { cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../input/", "data16le"), NULL, 0, UTF_16LE},
+            { cpMakeFileName(&s_caBuf[2*PATH_MAX], SOURCE_DIR, "/../input/", "data16be"), NULL, 0, UTF_16BE},
+            { cpMakeFileName(&s_caBuf[3*PATH_MAX], SOURCE_DIR, "/../input/", "data32le"), NULL, 0, UTF_32LE},
     };
     conv_file* spFileIn;
     aint uiFileCount = (aint)(sizeof(saFiles) / sizeof(saFiles[0]));
@@ -449,8 +458,8 @@ static int iBase64() {
     aint uiBufSize = 1024;
     uint8_t *ucpRand, *ucpRand64, *ucpRandBuf1, *ucpRandBuf2;
     aint uiRandLen, uiRand64Len, uiBuf1Len, uiBuf2Len;
-    char* cpRandFile = "../input/rand512";
-    char* cpRand64File = "../input/rand512b64";
+    const char* cpRandFile = cpMakeFileName(&s_caBuf[0], SOURCE_DIR, "/../input/", "rand512");
+    const char* cpRand64File = cpMakeFileName(&s_caBuf[PATH_MAX], SOURCE_DIR, "/../input/", "rand512b64");
     conv_src sSrc;
     conv_dst sDst;
     exception e;

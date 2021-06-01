@@ -1,0 +1,18 @@
+3.1.1.12.  Unusual Reason Phrase
+
+   This 200 response contains a reason phrase other than "OK".  The
+   reason phrase is intended for human consumption and may contain any
+   string produced by
+
+       Reason-Phrase   =  *(reserved / unreserved / escaped
+                          / UTF8-NONASCII / UTF8-CONT / SP / HTAB)
+
+   This particular response contains unreserved and non-ascii UTF-8
+   characters.  This response is well formed.  A parser must accept this
+   message.
+
+      Message Details : unreason
+      
+      LDT: 01/04/2021
+      Parses as expected with UTF8-NONASCII accepting many characters.
+

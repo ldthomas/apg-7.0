@@ -1,0 +1,2 @@
+
+#cmakedefine SOURCE_DIR "@SOURCE_DIR@"

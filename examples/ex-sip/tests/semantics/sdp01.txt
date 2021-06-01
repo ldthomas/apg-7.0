@@ -1,0 +1,14 @@
+3.3.15.  Unacceptable Accept Offering
+
+   This request indicates that the response must contain a body in an
+   unknown type.  In particular, since the Accept header field does not
+   contain application/sdp, the response may not contain an SDP body.
+   The recipient of this request could respond with a 406 Not
+   Acceptable, with a Warning/399 indicating that a response cannot be
+   formulated in the formats offered in the Accept header field.  It is
+   also appropriate to respond with a 400 Bad Request, since all SIP
+   User-Agents (UAs) supporting INVITE are required to support
+   application/sdp.
+
+      Message Details : sdp01
+

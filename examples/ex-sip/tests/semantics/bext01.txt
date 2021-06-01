@@ -1,0 +1,11 @@
+3.3.5.  Proxy-Require and Require
+
+   This request tests proper implementation of SIP's Proxy-Require and
+   Require extension mechanisms.
+
+   Any element receiving this request will respond with a 420 Bad
+   Extension response, containing an Unsupported header field listing
+   these features from either the Require or Proxy-Require header field,
+   depending on the role in which the element is responding.
+
+      Message Details : bext01

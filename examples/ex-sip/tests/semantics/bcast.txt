@@ -1,0 +1,15 @@
+3.3.10.  200 OK Response with Broadcast Via Header Field Value
+
+   This message is a response with a 2nd Via header field value's sent-
+   by containing 255.255.255.255.  The message is well formed; parsers
+   must not fail when receiving it.
+
+   Per [RFC3261], an endpoint receiving this message should simply
+   discard it.
+
+   If a proxy followed normal response processing rules blindly, it
+   would forward this response to the broadcast address.  To protect
+   against this as an avenue of attack, proxies should drop such
+   responses.
+
+      Message Details : bcast

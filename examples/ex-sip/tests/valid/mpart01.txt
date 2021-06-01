@@ -1,0 +1,17 @@
+3.1.1.11.  Multipart MIME Message
+
+   This MESSAGE request contains two body parts.  The second part is
+   binary encoded and contains null (0x00) characters.  Receivers must
+   take care to frame the received message properly.
+
+   Parsers must accept this message as well formed, even if the
+   application above the parser does not support multipart/signed.
+
+   Additional examples of multipart/mime messages, in particular S/MIME
+   messages, are available in the security call flow examples document
+   [SIP-SEC].
+
+      Message Details : mpart01
+      
+      LDT: 01/04/2021
+      message-body accepts all octets as required.

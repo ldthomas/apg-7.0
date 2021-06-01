@@ -1,0 +1,24 @@
+3.1.2.12.  Invalid Time Zone in Date Header Field
+
+   This INVITE is invalid, as it contains a non-GMT time zone in the SIP
+   Date header field.
+
+   It is acceptable to reject this request as malformed (though an
+   element shouldn't do that unless the contents of the Date header
+   field were actually important to its processing).  An element wishing
+   to be liberal in what it accepts could ignore this value altogether
+   if it wasn't going to use the Date header field anyway.  Otherwise,
+   it could attempt to interpret this date and adjust it to GMT.
+
+   RFC 3261 explicitly defines the only acceptable time zone designation
+   as "GMT".  "UT", while synonymous with GMT per [RFC2822], is not
+   valid.  "UTC" and "UCT" are also invalid.
+
+      Message Details : baddate
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+
+      Date fails as expected. However, as with other invalid messages
+      when such a header fails, the extension-header picks it up OK.
+

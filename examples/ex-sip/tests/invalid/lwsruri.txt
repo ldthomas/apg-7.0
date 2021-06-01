@@ -1,0 +1,15 @@
+3.1.2.8.  Malformed SIP Request-URI (embedded LWS)
+
+   This INVITE has illegal LWS within the Request-URI.
+
+   An element receiving this request should respond with a 400 Bad
+   Request.
+
+   An element could attempt to ignore the embedded LWS for those schemes
+   (like SIP) where doing so would not introduce ambiguity.
+
+      Message Details : lwsruri
+      
+      NOTE: LDT: 01/04/2021
+      Fails as expected. Fails immediately at the missing SP
+      after the Request-URI.

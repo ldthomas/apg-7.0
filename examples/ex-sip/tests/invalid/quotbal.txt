@@ -1,0 +1,19 @@
+3.1.2.6.  Unterminated Quoted String in Display Name
+
+   This is a request with an unterminated quote in the display name of
+   the To field.  An element receiving this request should return a 400
+   Bad Request error.
+
+   An element could attempt to infer a terminating quote and accept the
+   message.  Such an element needs to take care that it makes a
+   reasonable inference when it encounters
+
+      To: "Mr J. User <sip:j.user@example.com> <sip:realj@example.net>
+
+      Message Details : quotbal
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      The To: header does indeed fail. The liberal extension-header
+      accepts it OK.
+      

@@ -1,0 +1,22 @@
+3.1.2.13.  Failure to Enclose name-addr URI in <>
+
+   This REGISTER request is malformed.  The SIP URI contained in the
+   Contact Header field has an escaped header, so the field must be in
+   name-addr form (which implies that the URI must be enclosed in <>).
+
+   It is reasonable for an element receiving this request to respond
+   with a 400 Bad Request.  An element choosing to be liberal in what it
+   accepts could infer the angle brackets since there is no ambiguity in
+   this example.  In general, that won't be possible.
+
+      Message Details : regbadct
+      
+      NOTE: LDT: 01/04/2021
+      The parse succeeds. The message is syntactically correct.
+      Actually escaped characters are accepted in SIP-URI headers.
+      headers           =  "?" header *( "&" header )
+      header            =  hname "=" hvalue
+      hname             =  1*( hnv-unreserved / unreserved / escaped )
+      hvalue            =  *( hnv-unreserved / unreserved / escaped )
+      hnv-unreserved    =  "[" / "]" / "/" / "?" / ":" / "+" / "$"
+

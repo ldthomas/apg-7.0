@@ -1,0 +1,10 @@
+3.3.6.  Unknown Content-Type
+
+   This INVITE request contains a body of unknown type.  It is
+   syntactically valid.  A parser must not fail when receiving it.
+
+   A proxy receiving this request would process it just as it would any
+   other INVITE.  An endpoint receiving this request would reject it
+   with a 415 Unsupported Media Type error.
+
+      Message Details : invut

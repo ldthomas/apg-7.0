@@ -1,0 +1,51 @@
+3.1.1.2.  Wide Range of Valid Characters
+
+   This message exercises a wider range of characters in several key
+   syntactic elements than implementations usually see.  In particular,
+   note the following:
+
+   o  The Method contains non-alpha characters from token.  Note that %
+      is not an escape character for this field.  A method of IN%56ITE
+      is an unknown method.  It is not the same as a method of INVITE.
+
+   o  The Request-URI contains unusual, but legal, characters.
+
+   o  A branch parameter contains all non-alphanum characters from
+      token.
+
+   o  The To header field value's quoted string contains quoted-pair
+      expansions, including a quoted NULL character.
+
+   o  The name part of name-addr in the From header field value contains
+      multiple tokens (instead of a quoted string) with all non-alphanum
+      characters from the token production rule.  That value also has an
+      unknown header parameter whose name contains the non-alphanum
+      token characters and whose value is a non-ascii range UTF-8
+      encoded string.  The tag parameter on this value contains the
+      non-alphanum token characters.
+
+   o  The Call-ID header field value contains the non-alphanum
+      characters from word.  Notice that in this production:
+
+      *  % is not an escape character.  It is only an escape character
+         in productions matching the rule "escaped".
+
+      *  " does not start a quoted string.  None of ',` or " imply that
+         there will be a matching symbol later in the string.
+
+      *  The characters []{}()<> do not have any grouping semantics.
+         They are not required to appear in balanced pairs.
+
+   o  There is an unknown header field (matching extension-header) with
+      non-alphanum token characters in its name and a UTF8-NONASCII
+      value.
+
+   If this unusual URI has been defined at a proxy, the proxy will
+   forward this request normally.  Otherwise, a proxy will generate a
+   404.  Endpoints will generate a 501 listing the methods they
+   understand in an Allow header field.
+
+      Message Details : intmeth
+      
+      LDT: 01/04/2021
+      Parses as expected.

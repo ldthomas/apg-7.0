@@ -79,7 +79,20 @@ The compiled example will execute the following cases. Run the application with 
  - case 5: Illustrate writing a JSON file from a value tree of parsed JSON values.
  - case 6: Illustrate building a JSON file.
 */
+#include <limits.h>
 #include "../../json/json.h"
+
+#include "source.h"
+
+static const char* cpMakeFileName(char* cpBuffer, const char* cpBase, const char* cpDivider, const char* cpName){
+    strcpy(cpBuffer, cpBase);
+    strcat(cpBuffer, cpDivider);
+    strcat(cpBuffer, cpName);
+    return cpBuffer;
+}
+
+static char s_caBuf[PATH_MAX];
+static char s_caBufOut[5*PATH_MAX];
 
 static char* s_cpDescription =
         "Illustrate the JSON object for parsing and building JSON files.";
@@ -124,7 +137,6 @@ static int iSimpleParse() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpJson = NULL;
-    char* cpInput = "../input/json-parse.json";
     json_value* spRoot;
     void* vpIn;
     exception e;
@@ -133,6 +145,7 @@ static int iSimpleParse() {
         // try block
         vpMem = vpMemCtor(&e);
         vpJson = vpJsonCtor(&e);
+        const char* cpInput = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "json-parse.json");
 
         // display the information header
         char* cpHeader =
@@ -168,7 +181,6 @@ static int iFindKeys() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpJson = NULL;
-    char* cpInput = "../input/json-parse.json";
     json_value* spRoot, *spValue;
     void* vpIn, *vpIt;
     u32_phrase* spKey32;
@@ -178,6 +190,7 @@ static int iFindKeys() {
         // try block
         vpMem = vpMemCtor(&e);
         vpJson = vpJsonCtor(&e);
+        const char* cpInput = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "json-parse.json");
 
         // display the information header
         char* cpHeader =
@@ -248,7 +261,6 @@ static int iWalker() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpJson = NULL;
-    char* cpInput = "../input/json-parse.json";
     json_value* spRoot, *spValue;
     void* vpIn, *vpIt, *vpIt2;
     exception e;
@@ -257,6 +269,7 @@ static int iWalker() {
         // try block
         vpMem = vpMemCtor(&e);
         vpJson = vpJsonCtor(&e);
+        const char* cpInput = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "json-parse.json");
 
         // display the information header
         char* cpHeader =
@@ -315,7 +328,6 @@ static int iWriter() {
     int iReturn = EXIT_SUCCESS;
     static void* vpMem = NULL;
     static void* vpJson = NULL;
-    char* cpInput = "../input/json-parse.json";
     json_value* spRoot, *spValue;
     void* vpIn, *vpIt;
     char* cpaKeys[] = {
@@ -324,12 +336,12 @@ static int iWriter() {
             "numbers",
             "odd-\xFF-key",
     };
-    char* cpaOutFile[] = {
-            "../output/text.json",
-            "../output/unicode.json",
-            "../output/numbers.json",
-            "../output/odd.json",
-            "../output/root.json",
+    const char* cpaOutFile[] = {
+            cpMakeFileName(&s_caBufOut[0], SOURCE_DIR, "/../output/", "text.json"),
+            cpMakeFileName(&s_caBufOut[PATH_MAX], SOURCE_DIR, "/../output/", "unicode.json"),
+            cpMakeFileName(&s_caBufOut[2*PATH_MAX], SOURCE_DIR, "/../output/", "numbers.json"),
+            cpMakeFileName(&s_caBufOut[3*PATH_MAX], SOURCE_DIR, "/../output/", "odd.json"),
+            cpMakeFileName(&s_caBufOut[4*PATH_MAX], SOURCE_DIR, "/../output/", "root.json"),
     };
     uint8_t* ucpOutput;
     aint uiOutputLen;
@@ -340,6 +352,7 @@ static int iWriter() {
         // try block
         vpMem = vpMemCtor(&e);
         vpJson = vpJsonCtor(&e);
+        const char* cpInput = cpMakeFileName(s_caBuf, SOURCE_DIR, "/../input/", "json-parse.json");
 
         // display the information header
         char* cpHeader =
@@ -397,14 +410,14 @@ static int iBuilder() {
     typedef struct{
         aint uiIndex;
         char* cpKey;
-        char* cpFileName;
+        const char* cpFileName;
     } file_def;
     file_def saFiles[] = {
-            {0, "single", "../output/builder-single-value.json"},
-            {1, "text", "../output/builder-text.json"},
-            {2, "unicode", "../output/builder-unicode.json"},
-            {3, "numbers", "../output/builder-numbers.json"},
-            {4, "root", "../output/builder-root.json"},
+            {0, "single", cpMakeFileName(&s_caBufOut[0], SOURCE_DIR, "/../output/", "builder-single-value.json")},
+            {1, "text", cpMakeFileName(&s_caBufOut[PATH_MAX], SOURCE_DIR, "/../output/", "builder-text.json")},
+            {2, "unicode", cpMakeFileName(&s_caBufOut[2*PATH_MAX], SOURCE_DIR, "/../output/", "builder-unicode.json")},
+            {3, "numbers", cpMakeFileName(&s_caBufOut[3*PATH_MAX], SOURCE_DIR, "/../output/", "builder-numbers.json")},
+            {4, "root", cpMakeFileName(&s_caBufOut[4*PATH_MAX], SOURCE_DIR, "/../output/", "builder-root.json")},
     };
     uint8_t* ucpOutput;
     aint uiOutputLen;

@@ -1,0 +1,12 @@
+3.1.1.10.  Varied and Unknown Transport Types
+
+   This request contains Via header field values with all known
+   transport types and exercises the transport extension mechanism.
+   Parsers must accept this message as well formed.  Elements receiving
+   this message would process it exactly as if the 2nd and subsequent
+   header field values specified UDP (or other transport).
+
+      Message Details : transports
+      
+      LDT: 01/04/2021
+      The UNKNOWN transport type parses correctly as other-transport = token.

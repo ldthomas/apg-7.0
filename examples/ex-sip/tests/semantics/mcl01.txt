@@ -1,0 +1,15 @@
+3.3.9.  Multiple Content-Length Values
+
+   Multiple conflicting Content-Length header field values appear in
+   this request.
+
+   From a framing perspective, this situation is equivalent to an
+   invalid Content-Length value (or no value at all).
+
+   An element receiving this message should respond with an error.  This
+   request appeared over UDP, so the remainder of the datagram can
+   simply be discarded.  If a request like this arrives over TCP, the
+   framing error is not recoverable, and the connection should be
+   closed.
+
+      Message Details : mcl01
