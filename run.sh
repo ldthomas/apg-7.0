@@ -41,16 +41,19 @@ help(){
     echo '     Use this script to envoke the APG 7.0 parser generator or any of the supplied examples'
     echo "     of using APG and the supplied suite of accompanying libraries."
     echo ""
-    echo '     The target application must have been previously built with the script, build-release.sh,'
-    echo "     or it's equivalent"
+    echo '     The target application must have been previously built with the script'
+    echo "     ./build.sh -r target"
+    echo "     or it's equivalent."
     echo ""
     echo "     Note 1. When envoking ${APG} this script allows only 8 arguments. A better solution is"
     echo "             to copy ${APG} to a PATH directory and then envoke it directly from the command line."
     echo "             For example:"
     echo "             sudo cp ${BUILD}/${APG_DIR}/${APG} /usr/local/bin"
     echo ""
-    echo "     Note 2. Running the example applications here may provide limited enlightenment. For the examples,"
-    echo "             better to use the script build-debug.sh and run the examples in an IDE with a debugger."
+    echo "     Note 2. Running the example applications here may provide limited enlightenment."
+    echo "             For the examples, it is probably better to use the script"
+    echo "             ./build -d target"
+    echo "             and run the examples in the Eclipse IDE with a debugger."
     echo ""
     targets
 }

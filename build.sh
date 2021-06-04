@@ -1,18 +1,32 @@
 #!/bin/bash
 
-# define some variables
-
-#cmake -DCMAKE_BUILD_TYPE=Release -S ex-basic -B builds/ex-basic-release
+# default variables
 APG_DIR=apg
 EXAMPLES_DIR=examples
-BUILD_DIR=Debug
-TYPE=-DCMAKE_BUILD_TYPE=Debug
+BUILD_DIR_DEBUG=Debug
+BUILD_DIR_RELEASE=Release
+TYPE_DEBUG=-DCMAKE_BUILD_TYPE=Debug
+TYPE_RELEASE=-DCMAKE_BUILD_TYPE=Release
 NAMES=(ex-apgex ex-api ex-ast ex-basic ex-conv ex-format ex-json ex-lines ex-msgs ex-sip ex-trace ex-wide ex-xml)
 NAMELEN=${#NAMES[@]}
+FLAG_DEBUG=-d
+FLAG_RELEASE=-r
+HELP="--help"
+SOURCE=
+BUILD=
+TARGET=
 
-# modify these for other IDE or version
-IDE='-G "Eclipse CDT4 - Unix Makefiles"'
-IDE_VERSION=-DCMAKE_ECLIPSE_VERSION=4.16
+# modify these for different IDE or build system
+IDE_DEBUG='-G "Eclipse CDT4 - Unix Makefiles"'
+IDE_VERSION_DEBUG=4.16
+IDE_RELEASE='Unix Makefiles'
+IDE_VERSION_RELEASE=''
+
+# release version is default
+BUILD_DIR=${BUILD_DIR_RELEASE}
+IDE=${IDE_RELEASE}
+IDE_VERSION=${IDE_VERSION_RELEASE}
+TYPE=${TYPE_RELEASE}
 
 # display the targets and descriptions
 targets(){
@@ -40,17 +54,24 @@ help(){
     echo "     build-debug.sh  - create Eclipse projects for the APG 7.0 parser generator and the examples of it's use"
     echo ''
     echo 'SYNOPSIS'
-    echo "     ./build-debug.sh target"
+    echo "     ./build.sh [-r | -d |--help] target"
     echo ''
     echo 'DESCRIPTION'
-    echo '     Use this script to generate Eclipse projects for the APG 7.0 parser generator and any of the'
-    echo "     supplied example applications. After running this script, in the Eclipse IDE select"
-    echo "     Project->import->General->Existing Projects into Workspace"
+    echo '     This script will generate make files for the APG 7.0 parser generator and any'
+    echo "     or all of the supplied example applications."
+    echo ""
+    echo "     In release mode (-r), Unix Makefiles are generated and optimized executables are built."
+    echo "     For a different build system, modify IDE_RELEASE and IDE_VERSION_RELEASE."
+    echo ""
+    echo "     In debug mode (-d) Eclipse, version 4.16, project files are generated."
+    echo "     Open Eclipse and select"
+    echo "         Project->import->General->Existing Projects into Workspace"
     echo "     and browse to the ./Debug directory. At this point you should be able to import all of the"
     echo "     built projects into Eclipse."
+    echo "     For a different build system, modify IDE_DEBUG and IDE_VERSION_DEBUG."
     echo ""
-    echo "     For a different IDE or version adjust the variables, IDE and/or IDE_VERSION,"
-    echo "     in this script accordingly"
+    echo "     -r (default) - generate a release build and compile the executables"
+    echo "     -d           - generate Eclipse project files for a debug build"
     echo ""
     targets
 }
@@ -58,6 +79,9 @@ help(){
 # generate and Eclipse target
 build(){
     eval "cmake ${IDE} ${IDE_VERSION} ${TYPE} -S $1 -B $2"
+    if [ ${TYPE} == ${TYPE_RELEASE} ];then
+        eval "cmake --build $2"
+    fi
 }
 
 # check for an argument
@@ -66,7 +90,23 @@ if [ $# -eq 0 ] || [ $1 == ${HELP} ]; then
     exit 0
 fi
 
-# check for an output directory
+# set up for release or debug build
+if [ $1 == ${FLAG_DEBUG} ]; then
+    BUILD_DIR=${BUILD_DIR_DEBUG}
+    IDE=${IDE_DEBUG}
+    IDE_VERSION=${IDE_VERSION_DEBUG}
+    TYPE=${TYPE_DEBUG}
+    TARGET=$2
+    echo "Building DEBUG target ${TARGET}"
+    elif [ $1 == ${FLAG_RELEASE} ]; then
+    TARGET=$2
+    echo "Building RELEASE target ${TARGET}"
+    else
+    TARGET=$1
+    echo "Building RELEASE target ${TARGET}"
+fi    
+
+# the examples require an output directory
 if [ ! -d ${EXAMPLES_DIR}/output ]; then
     echo "No example output directory - creating"
     echo "${EXAMPLES_DIR}/output"
@@ -75,7 +115,7 @@ fi
 
 
 # generate Makefiles and build all example executables
-if [ $1 == "all" ]; then
+if [ ${TARGET} == "all" ]; then
     build apg ${BUILD_DIR}/apg
     for (( i=0; i<${NAMELEN}; i++))
     do
@@ -84,8 +124,8 @@ if [ $1 == "all" ]; then
     exit 0
 fi
 
-# generate and build special case if apg70 executable
-if [ $1 == "apg" ]; then
+# generate and build special case of apg70 executable
+if [ ${TARGET} == "apg" ]; then
     build apg ${BUILD_DIR}/${APG_DIR}
     exit 0
 fi    
@@ -94,13 +134,13 @@ fi
 # generate and build the example if found
 for (( i=0; i<${NAMELEN}; i++))
 do
-    if [ ${NAMES[$i]} == $1 ]; then
-        build ${EXAMPLES_DIR}/$1 ${BUILD_DIR}/$1
+    if [ ${NAMES[$i]} == ${TARGET} ]; then
+        build ${EXAMPLES_DIR}/${TARGET} ${BUILD_DIR}/${TARGET}
         exit 0
     fi
 done
 
 # error on unrecognized argument
-echo "unrecognized target: $1"
+echo "Unrecognized target: ${TARGET}"
 help
 exit 1
