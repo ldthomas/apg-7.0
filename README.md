@@ -1,4 +1,4 @@
-﻿﻿# APG Version 7.0
+﻿## ﻿﻿APG Version 7.0
 
 [Overview](#overview)<br>
 [Documentation](#doc)<br>
@@ -80,7 +80,7 @@ _Note that these libraries cannot be conveniently built once and for all and use
 
 >$./build.sh --help
 
-Although considerably more tedious, Eclipse projects can also be created manually without the help of `cmake` and this is described in detail for the `apg` application in the [installation](https://github.com/ldthomas/apg-7.0/blob/main/Installation.md) document. 
+The [installation](https://github.com/ldthomas/apg-7.0/blob/main/Installation.md) document gives detailed instructions for creating Eclipse projects for `apg` and all of the examples both manually and using the `./build.sh` script . 
 
 The script, [run.sh](https://github.com/ldthomas/apg-7.0/blob/main/run.sh) is available to execute any of the applications that have been built. For usage execute:
 

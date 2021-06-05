@@ -32,7 +32,6 @@ TYPE=${TYPE_RELEASE}
 targets(){
     echo '     target    - description'
     echo '     ------    - -----------'
-    echo '     --help    - print this help screen'
     echo '     all       - build all targets'
     echo '     apg       - build apg70, the APG Version 7.0 parser generator'
     echo '     ex-apgex  - examples of using the SABNF pattern-matching engine, apgex library'
@@ -51,7 +50,8 @@ targets(){
 # display the help screen
 help(){
     echo 'NAME'
-    echo "     build-debug.sh  - create Eclipse projects for the APG 7.0 parser generator and the examples of it's use"
+    echo "     build.sh  - create executables and/or Eclipse projects for the"
+    echo "                 APG 7.0 parser generator and examples of it's use"
     echo ''
     echo 'SYNOPSIS'
     echo "     ./build.sh [-r | -d |--help] target"
@@ -66,12 +66,13 @@ help(){
     echo "     In debug mode (-d) Eclipse, version 4.16, project files are generated."
     echo "     Open Eclipse and select"
     echo "         Project->import->General->Existing Projects into Workspace"
-    echo "     and browse to the ./Debug directory. At this point you should be able to import all of the"
-    echo "     built projects into Eclipse."
+    echo "     and browse to the ./Debug directory. At this point you should be able to"
+    echo "     import all of the built projects into Eclipse."
     echo "     For a different build system, modify IDE_DEBUG and IDE_VERSION_DEBUG."
     echo ""
     echo "     -r (default) - generate a release build and compile the executables"
     echo "     -d           - generate Eclipse project files for a debug build"
+    echo '     --help       - print this help screen'
     echo ""
     targets
 }
