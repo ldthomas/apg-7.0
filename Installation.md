@@ -8,6 +8,7 @@
 ﻿ _**Note:** the instructions here are for Eclipse C/C++, version 4.16 on Linux Ubuntu 20.04. There may be differences for other versions and OSs._
 ## <a id="cmake"></a>CMake
 ﻿
+
 ﻿The script [build.sh](https://github.com/ldthomas/apg-7.0/blob/main/build.sh) can be used to generate Eclipse project files for `apg` and all of the examples. This section gives explicit instructions on how to do this. Execute
 ﻿
 
@@ -50,7 +51,7 @@ The "Project type:" should be "Executable->Empty Project" and "Toolchains:" shou
 Next it needs to be configured with the necessary macros and source libraries. Right click on the project name and navigate to
 >Properties->C/C++ General->Paths and Symbols
 
-At the "#Symbols" tab click "Add" and type `APG_AST`. Check the box "Add to all configurations" and click "OK". At the "Source Location" tab click "Link Folder...".  In the Folder name:" box type `apg`. Check the box "Link to folder in the file system" and navigate to (full path)  `./apg`. Click `OK`. Repeat for
+At the "#Symbols" tab click "Add" and type `APG_AST`. Check the box "Add to all configurations" and click "OK". At the "Source Location" tab click "Link Folder...".  In the "Folder name:" box type `apg`. Check the box "Link to folder in the file system" and navigate to (full path)  `./apg`. Click `OK`. Repeat for
 >api<br>
 >library<br>
 >utilities
@@ -58,4 +59,25 @@ At the "#Symbols" tab click "Add" and type `APG_AST`. Check the box "Add to all 
 The project is now ready to build. Right click the project and select `BuildConfigurations->Set Active->Debug`. Right click the project name again and select `Build Project`. It should build with no errors or warnings. At this point you can run, edit and debug the `apg` project in the normal Eclipse manner.
 
 Projects for all of the example applications can be created with a similar process.
+
+However, most of the examples read and write files from and to
+```
+ ./examples/input
+ ./examples/output
+```
+Therefore, these programs need to know how to find these directories regardless of the current working directory at the time of execution. This is handled automatically by `cmake`. `cmake` generates a header file with the absolute location of the source code defined. For the manual builds of  the examples that do input and output it is necessary to manually add a header file to serve that purpose. For example, in the `ex-trace` example it is necessary to add the header file 
+```
+./examples/ex-trace/source.h
+```
+with the content
+```
+#ifndef SOURCE_H_
+#define SOURCE_H_
+#define SOURCE_DIR "/my/path/apg-7.0/examples/ex-trace"
+#endif /* SOURCE_H_ */
+```
+
+where `/my/path/` is the absolute path to the repository directory.
+
+
 
