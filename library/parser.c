@@ -456,33 +456,49 @@ aint uiParserRuleLookup(void* vpCtx, const char* cpRuleName){
     return uiReturn;
 }
 
-/** \brief Find the UDT index corresponding to a UDT name.
+/** \brief Find the rule name from the corresponding index.
+ *
+ * A rule's index is the 0-based order in which it appears in the SABNF grammar.
+ * Used in many places instead of the name to identify a rule.
+ * The parser's start rule (\ref parser_config) would be a prime example.
+ * \param vpCtx Pointer to a valid parser context previously returned from \ref vpParserCtor() or vpApiOutputParser().
+ * If not valid, the application will silently exit with a \ref BAD_CONTEXT exit code.
+ * \param uiRuleIndx Index (order of appearance in the SABNF grammar) of the rule name to look up
+ * \return Pointer to the rule name if successful. \ref NULL if the index is out of range.
+ */
+const char* cpParserRuleName(void* vpCtx, aint uiRuleIndex){
+    parser* spCtx = (parser*) vpCtx;
+    if (!(vpCtx && (spCtx->vpValidate == s_vpMagicNumber))) {
+        vExContext();
+    }
+
+    if(uiRuleIndex < spCtx->uiRuleCount){
+        return spCtx->spRules[uiRuleIndex].cpRuleName;
+    }
+    return NULL;
+}
+
+/** \brief Find the UDT name corresponding to a UDT index.
  *
  * A UDT's index is the  0-based order in which it appears in the SABNF grammar.
  * Used in some places instead of the name to identify a UDT.
  * vParserSetUdtCallback() would be an example.
  * \param vpCtx Pointer to a valid parser context previously returned from \ref vpParserCtor() or vpApiOutputParser().
  * If not valid, the application will silently exit with a \ref BAD_CONTEXT exit code.
- * \param cpUdtName Name of the UDT to look up. Case insensitive.
- * \return The UDT index if successful. \ref APG_UNDEFINED if the name does not appear in the SABNF grammar.
+ * \param uiUdtIndex Index of the UDT to look up.
+ * \return Pointer to the UDT name if successful. \ref NULL if the index is out of range.
  */
-aint uiParserUdtLookup(void* vpCtx, const char* cpUdtName){
+const char* cpParserUdtName(void* vpCtx, aint uiUdtIndex){
     aint uiReturn = APG_UNDEFINED;
     parser* spCtx = (parser*) vpCtx;
     if (!(vpCtx && (spCtx->vpValidate == s_vpMagicNumber))) {
         vExContext();
     }
 
-    // linear search (qsort + binary search overkill here)
-    udt* spUdt = spCtx->spUdts;
-    aint ui = 0;
-    for(; ui < spCtx->uiUdtCount; ui++, spUdt++){
-        if(iStriCmp(cpUdtName, spUdt->cpUdtName) == 0){
-            uiReturn = spUdt->uiUdtIndex;
-            break;
-        }
+    if(uiUdtIndex < spCtx->uiUdtCount){
+        return spCtx->spUdts[uiUdtIndex].cpUdtName;
     }
-    return uiReturn;
+    return NULL;
 }
 
 #ifndef APG_NO_PPPT

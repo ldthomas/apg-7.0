@@ -234,6 +234,10 @@ static void vRnmValidateCallback(parser* spCtx, rule* spRule, aint uiOffset, con
             XTHROW(spCtx->spException,
                     "user rule name callback function: returned empty phrase for non-empty rule");
         }
+        // enforce 0 phrase length on NOMATCH
+        if(uiState == ID_NOMATCH){
+            spCtx->sCBData.uiCallbackPhraseLength = 0;
+        }
     }
 }
 //#define PPPT_FAILED bPpptFailed

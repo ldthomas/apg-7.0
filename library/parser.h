@@ -218,6 +218,8 @@ abool bParserValidate(void* vpCtx);
 void vParserParse(void* vpCtx, parser_config* spConfig, parser_state* spState);
 aint uiParserRuleLookup(void* vpCtx, const char* cpRuleName);
 aint uiParserUdtLookup(void* vpCtx, const char* cpUdtName);
+const char* cpParserRuleName(void* vpCtx, aint uiRuleIndex);
+const char* cpParserUdtName(void* vpCtx, aint uiUdtIndex);
 void vParserSetRuleCallback(void* vpCtx, aint uiRuleId, parser_callback pfnCallback);
 void vParserSetUdtCallback(void* vpCtx, aint uiUdtId, parser_callback pfnCallback);
 

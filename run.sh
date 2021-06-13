@@ -6,7 +6,7 @@ APG=apg70
 APG_DIR=apg
 EXAMPLES=examples
 BUILD=Release
-NAMES=(ex-apgex ex-api ex-ast ex-basic ex-conv ex-format ex-json ex-lines ex-msgs ex-sip ex-trace ex-wide ex-xml)
+NAMES=(ex-apgex ex-api ex-ast ex-basic ex-conv ex-format ex-json ex-lines ex-msgs ex-odata ex-sip ex-trace ex-wide ex-xml)
 NAMELEN=${#NAMES[@]}
 HELP=--help
 
@@ -25,6 +25,7 @@ targets(){
     echo '     ex-json   - illustrate the use of the JSON parser library'
     echo '     ex-lines  - illustrate the lines parsing library'
     echo '     ex-msgs   - illustrate the use of the message logging library'
+    echo '     ex-odata  - run the OData tests'
     echo '     ex-sip    - parsing and time test for the Session Initiation Protocol (SIP) "torture tests"'
     echo '     ex-trace  - illustrate parser tracing and parser, memory and vector statistics'
     echo '     ex-wide   - illustrate parsing of wide (32-bit) characters'
@@ -76,7 +77,7 @@ fi
 for (( i=0; i<${NAMELEN}; i++))
 do
     if [ ${NAMES[$i]} == $1 ]; then
-        eval "${BUILD}/$1/$1 $2"
+        eval "${BUILD}/$1/$1 $2 $3"
         exit 0
     fi
 done

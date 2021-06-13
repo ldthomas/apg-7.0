@@ -1,0 +1,5 @@
+--input=../input/odata-abnf-construction-rules.txt
+--output=odata
+-dc
+-dra
+

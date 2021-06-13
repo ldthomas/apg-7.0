@@ -7,14 +7,16 @@ BUILD_DIR_DEBUG=Debug
 BUILD_DIR_RELEASE=Release
 TYPE_DEBUG=-DCMAKE_BUILD_TYPE=Debug
 TYPE_RELEASE=-DCMAKE_BUILD_TYPE=Release
-NAMES=(ex-apgex ex-api ex-ast ex-basic ex-conv ex-format ex-json ex-lines ex-msgs ex-sip ex-trace ex-wide ex-xml)
+NAMES=(ex-apgex ex-api ex-ast ex-basic ex-conv ex-format ex-json ex-lines ex-msgs ex-odata ex-sip ex-trace ex-wide ex-xml)
 NAMELEN=${#NAMES[@]}
 FLAG_DEBUG=-d
 FLAG_RELEASE=-r
 HELP="--help"
+CLEAN='--clean'
 SOURCE=
 BUILD=
 TARGET=
+CLEAN_FLAG=0
 
 # modify these for different IDE or build system
 IDE_DEBUG='-G "Eclipse CDT4 - Unix Makefiles"'
@@ -43,6 +45,7 @@ targets(){
     echo '     ex-json   - illustrate the use of the JSON parser library'
     echo '     ex-lines  - illustrate the lines parsing library'
     echo '     ex-msgs   - illustrate the use of the message logging library'
+    echo '     ex-odata  - run the OData test cases'
     echo '     ex-sip    - parsing and time test for the Session Initiation Protocol (SIP) "torture tests"'
     echo '     ex-trace  - illustrate parser tracing and parser, memory and vector statistics'
     echo '     ex-wide   - illustrate parsing of wide (32-bit) characters'
@@ -54,7 +57,7 @@ help(){
     echo "                 APG 7.0 parser generator and examples of it's use"
     echo ''
     echo 'SYNOPSIS'
-    echo "     ./build.sh [-r | -d |--help] target"
+    echo "     ./build.sh [-r | -d |--help] target [--clean]"
     echo ''
     echo 'DESCRIPTION'
     echo '     This script will generate make files for the APG 7.0 parser generator and any'
@@ -70,18 +73,24 @@ help(){
     echo "     import all of the built projects into Eclipse."
     echo "     For a different build system, modify IDE_DEBUG and IDE_VERSION_DEBUG."
     echo ""
-    echo "     -r (default) - generate a release build and compile the executables"
-    echo "     -d           - generate Eclipse project files for a debug build"
+    echo "     -r (default) - release mode, generate a release build and compile the executables"
+    echo "     -d           - bebug mode, generate Eclipse project files"
     echo '     --help       - print this help screen'
+    echo '     --clean      - in release mode if --clean is present, clean the target if previously built'
+    echo "                  - ignored in debug mode"
     echo ""
     targets
 }
 
 # generate and Eclipse target
 build(){
-    eval "cmake ${IDE} ${IDE_VERSION} ${TYPE} -S $1 -B $2"
-    if [ ${TYPE} == ${TYPE_RELEASE} ];then
-        eval "cmake --build $2"
+    if [ ${CLEAN_FLAG} -eq 1 ];then
+        eval "cmake --build $2 --target clean"
+    else
+        eval "cmake ${IDE} ${IDE_VERSION} ${TYPE} -S $1 -B $2"
+        if [ ${TYPE} == ${TYPE_RELEASE} ];then
+            eval "cmake --build $2"
+        fi
     fi
 }
 
@@ -100,11 +109,21 @@ if [ $1 == ${FLAG_DEBUG} ]; then
     TARGET=$2
     echo "Building DEBUG target ${TARGET}"
     elif [ $1 == ${FLAG_RELEASE} ]; then
-    TARGET=$2
-    echo "Building RELEASE target ${TARGET}"
+        TARGET=$2
+        if [ "$3" == ${CLEAN} ]; then
+            CLEAN_FLAG=1
+            echo "cleaning RELEASE target ${TARGET}"
+        else
+            echo "Building RELEASE target ${TARGET}"
+        fi
     else
-    TARGET=$1
-    echo "Building RELEASE target ${TARGET}"
+        TARGET=$1
+        if [ $2 == ${CLEAN} ]; then
+            CLEAN_FLAG=1
+            echo "cleaning RELEASE target ${TARGET}"
+        else
+            echo "Building RELEASE target ${TARGET}"
+        fi
 fi    
 
 # the examples require an output directory
