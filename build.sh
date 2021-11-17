@@ -54,7 +54,7 @@ targets(){
 help(){
     echo 'NAME'
     echo "     build.sh  - create executables and/or Eclipse projects for the"
-    echo "                 APG 7.0 parser generator and examples of it's use"
+    echo "                 APG 7.0 parser generator and examples of its use"
     echo ''
     echo 'SYNOPSIS'
     echo "     ./build.sh [-r | -d |--help] target [--clean]"
