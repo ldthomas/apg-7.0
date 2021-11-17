@@ -33,7 +33,7 @@ targets(){
 # display the help screen
 help(){
     echo 'NAME'
-    echo "     run.sh  - envoke the APG 7.0 parser generator and examples of it's use"
+    echo "     run.sh  - envoke the APG 7.0 parser generator and examples of its use"
     echo ''
     echo 'SYNOPSIS'
     echo "     ./run.sh target"
