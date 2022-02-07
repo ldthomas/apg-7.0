@@ -69,6 +69,10 @@ static const void* s_vpMagicNumber = (void*)"format";
 #include "../library/lib.h"
 #include "./objects.h"
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 /** \struct fmt_tag
  * \brief The context for the format object.
  *
