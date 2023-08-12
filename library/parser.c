@@ -141,7 +141,7 @@ void* vpParserAllocCtor(exception* spException, void* vpParserInit, abool bAlloc
     if(spParserInit->uiAcharTableLength){
         acpAcharTable = (achar*) vpMemAlloc(vpMem, (aint)(spParserInit->uiAcharTableLength * sizeof(achar)));
         if (!uiGetAcharTable(spParserInit, acpAcharTable)) {
-            XTHROW(spCtx->vpMem, "invalid achar table data");
+            XTHROW(spMemException(spCtx->vpMem), "invalid achar table data");
         }
         spCtx->acpAcharTable = acpAcharTable;
     }
@@ -149,7 +149,7 @@ void* vpParserAllocCtor(exception* spException, void* vpParserInit, abool bAlloc
     // get the parser initialization data in uints
     luipParserInit = (luint*) vpMemAlloc(vpMem, (aint)(spParserInit->uiParserInitLength * sizeof(luint)));
     if (!bGetParserInitData(spParserInit, luipParserInit)) {
-        XTHROW(spCtx->vpMem, "invalid parser initialization data");
+        XTHROW(spMemException(spCtx->vpMem), "invalid parser initialization data");
     }
     spInitHdr = (init_hdr*) luipParserInit;
     spCtx->acAcharMin = (achar)spInitHdr->uiAcharMin;
@@ -273,19 +273,19 @@ void vParserParse(void* vpCtx, parser_config* spConfig, parser_state* spState) {
         return; // should never return
     }
     if(!spConfig){
-        XTHROW(spCtx->vpMem, "parser configuration pointer cannot be NULL");
+        XTHROW(spMemException(spCtx->vpMem), "parser configuration pointer cannot be NULL");
         return; // should never return
     }
     if(!spState){
-        XTHROW(spCtx->vpMem, "parser state pointer cannot be NULL");
+        XTHROW(spMemException(spCtx->vpMem), "parser state pointer cannot be NULL");
         return; // should never return
     }
     // validate the input
     if (!spConfig->acpInput) {
-        XTHROW(spCtx->vpMem, "input string is NULL");
+        XTHROW(spMemException(spCtx->vpMem), "input string is NULL");
     }
     if (spConfig->uiStartRule >= spCtx->uiRuleCount) {
-        XTHROW(spCtx->vpMem, "start rule is out of range");
+        XTHROW(spMemException(spCtx->vpMem), "start rule is out of range");
     }
     memset(spState, 0, sizeof(*spState));
 
@@ -306,7 +306,7 @@ void vParserParse(void* vpCtx, parser_config* spConfig, parser_state* spState) {
     if (spConfig->bParseSubString) {
         // set the beginning and end of the sub string
         if (spConfig->uiSubStringBeg >= spCtx->uiInputStringLength) {
-            XTHROW(spCtx->vpMem, "sub string beginning is beyond the end of the input string");
+            XTHROW(spMemException(spCtx->vpMem), "sub string beginning is beyond the end of the input string");
         }
         spCtx->uiSubStringBeg = spConfig->uiSubStringBeg;
         if (spConfig->uiSubStringLength == 0) {
