@@ -358,7 +358,7 @@ char* cpUint32ToStr(uint32_t* uipBuf, aint uiLen, char* cpStr){
  * NOTE: Returns a structure, not a pointer to a structure.
  */
 u32_phrase sStrToPhrase32(const char* cpStr, uint32_t* uipBuf){
-    u32_phrase sPhrase = {};
+    u32_phrase sPhrase = {0, 0};
     aint uiStrLen = strlen(cpStr);
     aint ui = 0;
     for(; ui < uiStrLen; ui++){

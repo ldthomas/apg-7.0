@@ -31,12 +31,22 @@
  * \brief Utility functions code.
  */
 
-#include <unistd.h>
+#ifdef _MSC_VER
+    #include <direct.h>
+    #define getcwd _getcwd
+#else
+    #include <unistd.h>
+#endif
+
 #include <limits.h>
 
 #include "./utilities.h"
 
-static const size_t s_uiBufSize = (PATH_MAX + 128);
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+#define s_uiBufSize ((size_t) (PATH_MAX + 128))
 static char s_cPeriod = 46;
 static char* s_cpBinaryVal[16] = {
         "00 00", "00 01", "00 10", "00 11",
